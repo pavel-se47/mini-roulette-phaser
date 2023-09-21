@@ -1,6 +1,6 @@
 import Chip from "../classes/Chip";
+import Stats from "../classes/Stats";
 import BetZone from "../classes/BetZone";
-
 import { alert, info } from "@pnotify/core";
 import "@pnotify/core/dist/PNotify.css";
 import "@pnotify/core/dist/BrightTheme.css";
@@ -9,9 +9,10 @@ export default class ChipZone {
   constructor(scene) {
     this.scene = scene;
     this.betZone = new BetZone(this.scene);
+    this.stats = new Stats();
   }
 
-  createChipZone() {
+  createChipZone = () => {
     const chipZoneText = this.scene.add.text(
       this.scene.x / 2 + 5,
       this.scene.y / 2 + 30,
@@ -84,9 +85,9 @@ export default class ChipZone {
         },
         this.scene
       );
-  }
+  };
 
-  onSetChip(value) {
+  onSetChip = (value) => {
     let foundMatch = false;
 
     if (value === "AB" || value === "AR") {
@@ -152,29 +153,23 @@ export default class ChipZone {
         ...this.scene.state.valueChip,
         {
           value: value,
-          color: this.scene.currentColor(value),
-          colorHex: this.scene.currentColorHex(value),
+          color: this.currentColor(value),
+          colorHex: this.currentColorHex(value),
           currentBet: this.scene.state.currentBet,
         },
       ]),
         (this.scene.state.balance -= this.scene.state.currentBet),
-        this.scene.createStatsPanel(
-          this.scene,
-          this.scene.x,
-          this.scene.y,
-          this.scene.state.balance,
-          this.scene.state.currentBet,
-          this.scene.state.currentWin
-        );
+        this.stats.createStats(this.scene);
+
       this.scene.state.valueWheel = null;
     }
 
     this.betZone.onSetBet();
     this.betZone.calculateGeneralBetSum();
-    this.scene.onSetDefaultTextButton();
-  }
+    this.onSetDefaultTextButton();
+  };
 
-  createButtonClearChipZone() {
+  createButtonClearChipZone = () => {
     const clearChipZoneRectangle = this.scene.add
       .rectangle(this.scene.x / 2 + 80, 980, 230, 80, 0xffffff)
       .setInteractive();
@@ -198,16 +193,8 @@ export default class ChipZone {
         this.scene.state.limit = 20;
         this.scene.state.currentWin = 0;
         this.betZone.destroyBets(this.scene);
-        this.scene.onSetDefaultTextButton();
-
-        this.scene.createStatsPanel(
-          this.scene,
-          this.scene.x,
-          this.scene.y,
-          this.scene.state.balance,
-          this.scene.state.currentBet,
-          this.scene.state.currentWin
-        );
+        this.onSetDefaultTextButton();
+        this.stats.createStats(this.scene);
       },
       this
     );
@@ -222,18 +209,59 @@ export default class ChipZone {
         this.scene.state.limit = 20;
         this.scene.state.currentWin = 0;
         this.betZone.destroyBets(this.scene);
-        this.scene.onSetDefaultTextButton();
-
-        this.scene.createStatsPanel(
-          this.scene,
-          this.scene.x,
-          this.scene.y,
-          this.scene.state.balance,
-          this.scene.state.currentBet,
-          this.scene.state.currentWin
-        );
+        this.onSetDefaultTextButton();
+        this.stats.createStats(this.scene);
       },
       this.scene
     );
-  }
+  };
+
+  currentColor = (value) => {
+    if (value === 0) {
+      return "green";
+    } else if (
+      value === 3 ||
+      value === 4 ||
+      value === 8 ||
+      value === 7 ||
+      value === "AR"
+    ) {
+      return "red";
+    } else if (
+      value === 1 ||
+      value === 2 ||
+      value === 5 ||
+      value === 6 ||
+      value === "AB"
+    ) {
+      return "black";
+    }
+  };
+
+  currentColorHex = (value) => {
+    if (value === 0) {
+      return "0x00cc00";
+    } else if (
+      value === 3 ||
+      value === 4 ||
+      value === 8 ||
+      value === 7 ||
+      value === "AR"
+    ) {
+      return "0xff0000";
+    } else if (
+      value === 1 ||
+      value === 2 ||
+      value === 5 ||
+      value === 6 ||
+      value === "AB"
+    ) {
+      return "0x000000";
+    }
+  };
+
+  onSetDefaultTextButton = () => {
+    this.scene.buttonOnWheelText.setText("SPIN");
+    this.scene.buttonOnWheel.fillColor = "0xffa500";
+  };
 }

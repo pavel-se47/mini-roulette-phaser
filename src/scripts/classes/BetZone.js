@@ -1,9 +1,12 @@
+import Stats from "../classes/Stats";
+
 export default class BetZone {
   constructor(scene) {
     this.scene = scene;
+    this.stats = new Stats();
   }
 
-  createBet() {
+  createBet = () => {
     const betText = this.scene.add.text(
       this.scene.x / 2 - 230,
       this.scene.y / 2 + 30,
@@ -26,14 +29,7 @@ export default class BetZone {
           "pointerdown",
           () => {
             this.scene.state.currentBet = parseInt(text.text);
-            this.scene.createStatsPanel(
-              this.scene,
-              this.scene.x,
-              this.scene.y,
-              this.scene.state.balance,
-              this.scene.state.currentBet,
-              this.scene.state.currentWin
-            );
+            this.stats.createStats(this.scene);
           },
           this.scene
         );
@@ -49,21 +45,14 @@ export default class BetZone {
           "pointerdown",
           () => {
             this.scene.state.currentBet = parseInt(text.text);
-            this.scene.createStatsPanel(
-              this.scene,
-              this.scene.x,
-              this.scene.y,
-              this.scene.state.balance,
-              this.scene.state.currentBet,
-              this.scene.state.currentWin
-            );
+            this.stats.createStats(this.scene);
           },
           this.scene
         );
     }
-  }
+  };
 
-  onSetBet() {
+  onSetBet = () => {
     let x;
     let y;
     let colorCurrentBet;
@@ -123,19 +112,19 @@ export default class BetZone {
 
       this.scene.bets.push(bet);
     });
-  }
+  };
 
-  calculateGeneralBetSum() {
+  calculateGeneralBetSum = () => {
     const currBet = this.scene.state.valueChip.map(
       (object) => object.currentBet
     );
     const genBet = currBet.reduce((acc, number) => acc + number, 0);
     this.scene.state.generalBetSum = genBet;
-  }
+  };
 
-  destroyBets(context) {
+  destroyBets = (context) => {
     context.bets.forEach((object) => {
       object.destroy();
     });
-  }
+  };
 }

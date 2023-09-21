@@ -1,5 +1,3 @@
-import Phaser from "phaser";
-
 export default class Chip extends Phaser.GameObjects.Sprite {
   constructor(context, x, y, w, h, c, n) {
     super(context);

@@ -1,40 +1,20 @@
-import Phaser from "phaser";
-
-export default class Stats extends Phaser.GameObjects.Sprite {
-  constructor(scene, x, y, balance, currentBet, currentWin) {
-    super(scene);
+export default class Stats {
+  constructor(scene) {
     this.scene = scene;
-    this.x = x;
-    this.y = y;
-    this.balance = balance;
-    this.currentBet = currentBet;
-    this.currentWin = currentWin;
-    this.create();
   }
-
-  create() {
-    this.createStats(
-      this.x,
-      this.y,
-      this.balance,
-      this.currentBet,
-      this.currentWin
-    );
-  }
-
-  createStats(x, y, balance, bet, win) {
-    const statsRectangle = this.scene.add.rectangle(
-      x / 2,
+  createStats = (context) => {
+    const statsRectangle = context.add.rectangle(
+      context.x / 2,
       510,
       650,
       80,
       0xffffff
     );
 
-    const balanceText = this.scene.add.text(
-      x / 2 - 300,
-      y / 2 - 50,
-      "Your balance: \n" + balance,
+    const balanceText = context.add.text(
+      context.x / 2 - 300,
+      context.y / 2 - 50,
+      "Your balance: \n" + context.state.balance,
       {
         font: "bold 20px Arial",
         fill: "black",
@@ -42,10 +22,10 @@ export default class Stats extends Phaser.GameObjects.Sprite {
       }
     );
 
-    const currentBetText = this.scene.add.text(
-      x / 2 - 90,
-      y / 2 - 50,
-      "Your current bet: \n" + bet,
+    const currentBetText = context.add.text(
+      context.x / 2 - 90,
+      context.y / 2 - 50,
+      "Your current bet: \n" + context.state.currentBet,
       {
         font: "bold 20px Arial",
         fill: "black",
@@ -53,15 +33,15 @@ export default class Stats extends Phaser.GameObjects.Sprite {
       }
     );
 
-    const currentWinText = this.scene.add.text(
-      x / 2 + 140,
-      y / 2 - 50,
-      "Your current win: \n" + win,
+    const currentWinText = context.add.text(
+      context.x / 2 + 140,
+      context.y / 2 - 50,
+      "Your current win: \n" + context.state.currentWin,
       {
         font: "bold 20px Arial",
         fill: "black",
         align: "center",
       }
     );
-  }
+  };
 }
