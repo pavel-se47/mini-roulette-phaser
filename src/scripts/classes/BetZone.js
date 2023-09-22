@@ -1,14 +1,15 @@
-import Stats from "../classes/Stats";
+import Stats from "./Stats";
 
 export default class BetZone {
   constructor(scene) {
     this.scene = scene;
+    this.containerBet = null;
     this.stats = new Stats();
   }
 
   createBet = () => {
     const betText = this.scene.add.text(
-      this.scene.x / 2 - 230,
+      this.scene.x / 2 - 300,
       this.scene.y / 2 + 30,
       "Your bet",
       {
@@ -18,28 +19,20 @@ export default class BetZone {
       }
     );
 
-    for (let i = 0; i < 5; i += 1) {
-      const x = this.scene.x / 2 - 170;
+    for (let i = 0; i < this.scene.valueNumberBet.length; i += 1) {
+      const x = this.scene.x / 2 - 240;
       const y = 650 + i * 80;
-
-      const bet = this.scene.add
-        .circle(x, y, 36, this.scene.valueColorsBet[i])
-        .setInteractive()
-        .on(
-          "pointerdown",
-          () => {
-            this.scene.state.currentBet = parseInt(text.text);
-            this.stats.createStats(this.scene);
-          },
-          this.scene
-        );
-
+      const bet = this.scene.add.circle(0, 0, 36, this.scene.valueColorsBet[i]);
       const text = this.scene.add
-        .text(x, y, this.scene.valueNumberBet[i], {
+        .text(0, 0, this.scene.valueNumberBet[i], {
           font: "bold 24px Arial",
           fill: "white",
         })
-        .setOrigin(0.5)
+        .setOrigin(0.5);
+
+      this.containerBet = this.scene.add
+        .container(x, y, [bet, text])
+        .setSize(36, 36)
         .setInteractive()
         .on(
           "pointerdown",
@@ -59,38 +52,44 @@ export default class BetZone {
 
     this.scene.state.valueChip.forEach((object) => {
       if (object.value === 0) {
-        x = 940;
+        x = 840;
         y = 630;
       } else if (object.value === 1) {
-        x = 940;
+        x = 840;
         y = 710;
       } else if (object.value === 3) {
-        x = 940;
+        x = 840;
         y = 790;
+      } else if (object.value === 9) {
+        x = 840;
+        y = 870;
+      } else if (object.value === 10) {
+        x = 840;
+        y = 950;
       } else if (object.value === "AB") {
-        x = 940;
+        x = 920;
         y = 870;
       } else if (object.value === 6) {
-        x = 1020;
+        x = 920;
         y = 630;
       } else if (object.value === 4) {
-        x = 1020;
+        x = 920;
         y = 710;
       } else if (object.value === 2) {
-        x = 1020;
-        y = 790;
-      } else if (object.value === 8) {
-        x = 1100;
-        y = 630;
-      } else if (object.value === 5) {
-        x = 1100;
-        y = 710;
-      } else if (object.value === 7) {
-        x = 1100;
+        x = 920;
         y = 790;
       } else if (object.value === "AR") {
-        x = 1060;
-        y = 870;
+        x = 920;
+        y = 950;
+      } else if (object.value === 8) {
+        x = 1000;
+        y = 630;
+      } else if (object.value === 5) {
+        x = 1000;
+        y = 710;
+      } else if (object.value === 7) {
+        x = 1000;
+        y = 790;
       }
 
       if (object.currentBet === 10) {

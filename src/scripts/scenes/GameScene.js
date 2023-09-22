@@ -1,10 +1,9 @@
-import Phaser from "phaser";
-import Stats from "../classes/Stats";
-import AutoStart from "../classes/AutoStart";
 import Wheel from "../classes/Wheel";
 import BetZone from "../classes/BetZone";
 import ChipZone from "../classes/ChipZone";
 import Rules from "../classes/Rules";
+import Stats from "../classes/Stats";
+import AutoStart from "../classes/AutoStart";
 
 export default class GameScene extends Phaser.Scene {
   constructor() {
@@ -12,20 +11,14 @@ export default class GameScene extends Phaser.Scene {
     this.x = null;
     this.y = null;
     this.bets = [];
-    this.containerWheel = null;
-    this.containerChip = null;
-    this.containerButtonOnWheel = null;
-    this.valueNumbersWheel = [0, 1, 3, 6, 4, 2, 8, 5, 7];
+    this.sectors = 11;
+    this.valueNumberBet = [10, 20, 50, 100, 150];
+    this.valueColorsBet = [0xf5deb3, 0xadff2f, 0x0000ff, 0xff00ff, 0xffa500];
+    this.valueNumbersWheel = [0, 1, 3, 6, 4, 2, 8, 5, 7, 9, 10];
     this.valueColorsWheel = [
       0x00cc00, 0x000000, 0xff0000, 0x000000, 0xff0000, 0x000000, 0xff0000,
-      0x000000, 0xff0000,
+      0x000000, 0xff0000, 0x000000, 0xff0000,
     ];
-    this.valueColorsBet = [0xf5deb3, 0xadff2f, 0x0000ff, 0xff00ff, 0xffa500];
-    this.valueNumberBet = [10, 20, 50, 100, 150];
-    this.sectors = 9;
-    this.isSpinning = false;
-    this.spinDuration = 3000;
-    this.textWheel = [];
 
     this.state = {
       valueWheel: null,
@@ -71,7 +64,7 @@ export default class GameScene extends Phaser.Scene {
     this.add.sprite(
       this.sys.game.config.width / 2,
       this.sys.game.config.height / 2,
-      "chipboard"
+      "bg1"
     );
   }
 }

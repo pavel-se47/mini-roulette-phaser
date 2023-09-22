@@ -1,5 +1,3 @@
-import Phaser from "phaser";
-
 export default class PreloadScene extends Phaser.Scene {
   constructor() {
     super("Preload");
@@ -17,7 +15,7 @@ export default class PreloadScene extends Phaser.Scene {
     this.add.sprite(
       this.sys.game.config.width / 2,
       this.sys.game.config.height / 2,
-      "logo"
+      "bg0"
     );
   }
 }

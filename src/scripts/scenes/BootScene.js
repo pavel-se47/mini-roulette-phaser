@@ -1,6 +1,5 @@
-import Phaser from "phaser";
-import mainLogo from "../../assets/mainLogo.png";
-import chipboard from "../../assets/chipboard.png";
+import bg0 from "../../assets/bg0.png";
+import bg1 from "../../assets/bg1.png";
 
 export default class BootScene extends Phaser.Scene {
   constructor() {
@@ -8,8 +7,8 @@ export default class BootScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image("logo", mainLogo);
-    this.load.image("chipboard", chipboard);
+    this.load.image("bg0", bg0);
+    this.load.image("bg1", bg1);
   }
 
   create() {

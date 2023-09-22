@@ -1,7 +1,6 @@
 export default class Stats {
-  constructor(scene) {
-    this.scene = scene;
-  }
+  constructor() {}
+
   createStats = (context) => {
     const statsRectangle = context.add.rectangle(
       context.x / 2,

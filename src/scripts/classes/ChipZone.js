@@ -1,20 +1,22 @@
-import Chip from "../classes/Chip";
-import Stats from "../classes/Stats";
-import BetZone from "../classes/BetZone";
-import { alert, info } from "@pnotify/core";
-import "@pnotify/core/dist/PNotify.css";
-import "@pnotify/core/dist/BrightTheme.css";
+import Chip from "./Chip";
+import Stats from "./Stats";
+import BetZone from "./BetZone";
+import Colors from "./Colors";
+import Notifications from "./Notifications";
 
 export default class ChipZone {
   constructor(scene) {
     this.scene = scene;
+    this.containerButtonClearChipZone = null;
     this.betZone = new BetZone(this.scene);
     this.stats = new Stats();
+    this.colors = new Colors();
+    this.notifications = new Notifications();
   }
 
   createChipZone = () => {
     const chipZoneText = this.scene.add.text(
-      this.scene.x / 2 + 5,
+      this.scene.x / 2 - 90,
       this.scene.y / 2 + 30,
       "Chip zone",
       {
@@ -31,13 +33,16 @@ export default class ChipZone {
       let y;
 
       if (i <= 2) {
-        x = this.scene.x / 2 - 0;
+        x = this.scene.x / 2 - 100;
         y = 650 + i * 80;
       } else if (i <= 5) {
-        x = this.scene.x / 2 + 80;
+        x = this.scene.x / 2 - 20;
         y = 410 + i * 80;
+      } else if (i <= 8) {
+        x = this.scene.x / 2 + 60;
+        y = 170 + i * 80;
       } else {
-        x = this.scene.x / 2 + 160;
+        x = this.scene.x / 2 - 100;
         y = 170 + i * 80;
       }
 
@@ -62,8 +67,8 @@ export default class ChipZone {
         );
     }
 
-    const chipAR = new Chip(this.scene, 1100, 890, 110, 70, "0xff0000", "AR")
-      .setSize(110, 70)
+    const chipAR = new Chip(this.scene, 980, 970, 150, 70, "0xff0000", "AR")
+      .setSize(150, 70)
       .setOrigin(0.5)
       .setInteractive()
       .on(
@@ -74,8 +79,8 @@ export default class ChipZone {
         this.scene
       );
 
-    const chipAB = new Chip(this.scene, 980, 890, 110, 70, "0x000000", "AB")
-      .setSize(110, 70)
+    const chipAB = new Chip(this.scene, 980, 890, 150, 70, "0x000000", "AB")
+      .setSize(150, 70)
       .setOrigin(0.5)
       .setInteractive()
       .on(
@@ -90,61 +95,41 @@ export default class ChipZone {
   onSetChip = (value) => {
     let foundMatch = false;
 
-    if (value === "AB" || value === "AR") {
+    if (typeof value !== "number") {
       this.scene.state.limit = 100;
       if (this.scene.state.currentBet > 100) {
-        alert({
-          title: "You have exceeded the current limit!",
-          delay: 1000,
-          hide: true,
-          width: "400px",
-        });
+        this.notifications.alertNotification(
+          "You have exceeded the current limit!"
+        );
         return;
       }
     } else {
       this.scene.state.limit = 20;
-
       if (this.scene.state.currentBet > 20) {
-        alert({
-          title: "You have exceeded the current limit!",
-          delay: 1000,
-          hide: true,
-          width: "400px",
-        });
+        this.notifications.alertNotification(
+          "You have exceeded the current limit!"
+        );
         return;
       }
     }
 
     if (this.scene.state.currentBet > this.scene.state.balance) {
-      alert({
-        title: "Not enough funds to bet!",
-        delay: 1000,
-        hide: true,
-        width: "400px",
-      });
+      this.notifications.alertNotification("Not enough funds to bet!");
       this.scene.state.currentBet = 0;
       return;
     }
 
     this.scene.state.valueChip.forEach((object) => {
       if (object.value === value) {
-        alert({
-          title: "You have already placed a bet on this zone!",
-          delay: 1000,
-          hide: true,
-          width: "400px",
-        });
+        this.notifications.alertNotification(
+          "You have already placed a bet on this zone!"
+        );
         foundMatch = true;
       }
     });
 
     if (!this.scene.state.currentBet) {
-      info({
-        title: "Place your bet!",
-        delay: 1000,
-        hide: true,
-        width: "400px",
-      });
+      this.notifications.infoNotification("Place your bet!");
       return;
     }
 
@@ -153,8 +138,8 @@ export default class ChipZone {
         ...this.scene.state.valueChip,
         {
           value: value,
-          color: this.currentColor(value),
-          colorHex: this.currentColorHex(value),
+          color: this.colors.currentColor(value),
+          colorHex: this.colors.currentColorHex(value),
           currentBet: this.scene.state.currentBet,
         },
       ]),
@@ -170,98 +155,51 @@ export default class ChipZone {
   };
 
   createButtonClearChipZone = () => {
-    const clearChipZoneRectangle = this.scene.add
-      .rectangle(this.scene.x / 2 + 80, 980, 230, 80, 0xffffff)
-      .setInteractive();
+    const clearChipZoneRectangle = this.scene.add.rectangle(
+      0,
+      0,
+      180,
+      80,
+      0xffffff
+    );
 
     const clearChipZoneText = this.scene.add
-      .text(this.scene.x / 2 - 10, this.scene.y / 2 + 430, "CLEAR CHIP ZONE", {
+      .text(0, 0, "Clear chip zone", {
         font: "bold 20px Arial",
         fill: "black",
         align: "center",
       })
-      .setInteractive();
+      .setOrigin(0.5);
 
-    clearChipZoneRectangle.on(
-      "pointerdown",
-      () => {
-        this.scene.state.balance += this.scene.state.generalBetSum;
-        this.scene.state.valueChip = [];
-        this.scene.state.valueWheel = null;
-        this.scene.state.generalBetSum = 0;
-        this.scene.state.currentBet = 10;
-        this.scene.state.limit = 20;
-        this.scene.state.currentWin = 0;
-        this.betZone.destroyBets(this.scene);
-        this.onSetDefaultTextButton();
-        this.stats.createStats(this.scene);
-      },
-      this
-    );
-    clearChipZoneText.on(
-      "pointerdown",
-      () => {
-        this.scene.state.balance += this.scene.state.generalBetSum;
-        this.scene.state.valueChip = [];
-        this.scene.state.valueWheel = null;
-        this.scene.state.generalBetSum = 0;
-        this.scene.state.currentBet = 10;
-        this.scene.state.limit = 20;
-        this.scene.state.currentWin = 0;
-        this.betZone.destroyBets(this.scene);
-        this.onSetDefaultTextButton();
-        this.stats.createStats(this.scene);
-      },
-      this.scene
-    );
-  };
-
-  currentColor = (value) => {
-    if (value === 0) {
-      return "green";
-    } else if (
-      value === 3 ||
-      value === 4 ||
-      value === 8 ||
-      value === 7 ||
-      value === "AR"
-    ) {
-      return "red";
-    } else if (
-      value === 1 ||
-      value === 2 ||
-      value === 5 ||
-      value === 6 ||
-      value === "AB"
-    ) {
-      return "black";
-    }
-  };
-
-  currentColorHex = (value) => {
-    if (value === 0) {
-      return "0x00cc00";
-    } else if (
-      value === 3 ||
-      value === 4 ||
-      value === 8 ||
-      value === 7 ||
-      value === "AR"
-    ) {
-      return "0xff0000";
-    } else if (
-      value === 1 ||
-      value === 2 ||
-      value === 5 ||
-      value === 6 ||
-      value === "AB"
-    ) {
-      return "0x000000";
-    }
+    this.containerButtonClearChipZone = this.scene.add
+      .container(this.scene.x / 2 + 220, 965, [
+        clearChipZoneRectangle,
+        clearChipZoneText,
+      ])
+      .setSize(180, 80)
+      .setInteractive()
+      .on(
+        "pointerdown",
+        () => {
+          if (!this.scene.wheel.isSpinning) {
+            this.scene.state.balance += this.scene.state.generalBetSum;
+            this.scene.state.valueChip = [];
+            this.scene.state.valueWheel = null;
+            this.scene.state.generalBetSum = 0;
+            this.scene.state.currentBet = 10;
+            this.scene.state.limit = 20;
+            this.scene.state.currentWin = 0;
+            this.betZone.destroyBets(this.scene);
+            this.onSetDefaultTextButton();
+            this.stats.createStats(this.scene);
+          }
+        },
+        this.scene
+      );
   };
 
   onSetDefaultTextButton = () => {
-    this.scene.buttonOnWheelText.setText("SPIN");
-    this.scene.buttonOnWheel.fillColor = "0xffa500";
+    this.scene.wheel.buttonOnWheelText.setText("SPIN");
+    this.scene.wheel.buttonOnWheel.fillColor = "0xffa500";
   };
 }

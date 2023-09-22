@@ -5,19 +5,19 @@ export default class StartScene extends Phaser.Scene {
 
   create() {
     this.createBackground();
-    this.createButtons();
-    this.setEvents();
+    this.createButton();
+    this.setEvent();
   }
 
   createBackground() {
     this.add.sprite(
       this.sys.game.config.width / 2,
       this.sys.game.config.height / 2,
-      "chipboard"
+      "bg0"
     );
   }
 
-  createButtons() {
+  createButton() {
     this.buttonPlay = this.add
       .text(
         this.sys.game.config.width / 2,
@@ -32,7 +32,7 @@ export default class StartScene extends Phaser.Scene {
       .setInteractive();
   }
 
-  setEvents() {
+  setEvent() {
     this.buttonPlay.on("pointerdown", this.play, this);
   }
 
