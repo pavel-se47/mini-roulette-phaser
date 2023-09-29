@@ -1,4 +1,4 @@
-import Stats from "./Stats";
+import Stats from './Stats';
 
 export default class BetZone {
   constructor(scene) {
@@ -8,16 +8,11 @@ export default class BetZone {
   }
 
   createBet = () => {
-    const betText = this.scene.add.text(
-      this.scene.x / 2 - 300,
-      this.scene.y / 2 + 30,
-      "Your bet",
-      {
-        font: "bold 30px Arial",
-        fill: "white",
-        align: "center",
-      }
-    );
+    const betText = this.scene.add.text(this.scene.x / 2 - 300, this.scene.y / 2 + 30, 'Your bet', {
+      font: 'bold 30px Arial',
+      fill: 'white',
+      align: 'center',
+    });
 
     for (let i = 0; i < this.scene.valueNumberBet.length; i += 1) {
       const x = this.scene.x / 2 - 240;
@@ -25,8 +20,8 @@ export default class BetZone {
       const bet = this.scene.add.circle(0, 0, 36, this.scene.valueColorsBet[i]);
       const text = this.scene.add
         .text(0, 0, this.scene.valueNumberBet[i], {
-          font: "bold 24px Arial",
-          fill: "white",
+          font: 'bold 24px Arial',
+          fill: 'white',
         })
         .setOrigin(0.5);
 
@@ -35,7 +30,7 @@ export default class BetZone {
         .setSize(36, 36)
         .setInteractive()
         .on(
-          "pointerdown",
+          'pointerdown',
           () => {
             this.scene.state.currentBet = parseInt(text.text);
             this.stats.createStats(this.scene);
@@ -50,7 +45,7 @@ export default class BetZone {
     let y;
     let colorCurrentBet;
 
-    this.scene.state.valueChip.forEach((object) => {
+    this.scene.state.valueChip.forEach(object => {
       if (object.value === 0) {
         x = 840;
         y = 630;
@@ -66,7 +61,7 @@ export default class BetZone {
       } else if (object.value === 10) {
         x = 840;
         y = 950;
-      } else if (object.value === "AB") {
+      } else if (object.value === 'AB') {
         x = 920;
         y = 870;
       } else if (object.value === 6) {
@@ -78,7 +73,7 @@ export default class BetZone {
       } else if (object.value === 2) {
         x = 920;
         y = 790;
-      } else if (object.value === "AR") {
+      } else if (object.value === 'AR') {
         x = 920;
         y = 950;
       } else if (object.value === 8) {
@@ -104,25 +99,20 @@ export default class BetZone {
         colorCurrentBet = this.scene.valueColorsBet[4];
       }
 
-      const bet = this.scene.add
-        .circle(x, y, 12, colorCurrentBet)
-        .setOrigin(0.5)
-        .setStrokeStyle(1, 0xffffff);
+      const bet = this.scene.add.circle(x, y, 12, colorCurrentBet).setOrigin(0.5).setStrokeStyle(1, 0xffffff);
 
       this.scene.bets.push(bet);
     });
   };
 
   calculateGeneralBetSum = () => {
-    const currBet = this.scene.state.valueChip.map(
-      (object) => object.currentBet
-    );
+    const currBet = this.scene.state.valueChip.map(object => object.currentBet);
     const genBet = currBet.reduce((acc, number) => acc + number, 0);
     this.scene.state.generalBetSum = genBet;
   };
 
-  destroyBets = (context) => {
-    context.bets.forEach((object) => {
+  destroyBets = context => {
+    context.bets.forEach(object => {
       object.destroy();
     });
   };

@@ -1,7 +1,7 @@
-import BetZone from "./BetZone";
-import Stats from "./Stats";
-import Colors from "./Colors";
-import Notifications from "./Notifications";
+import BetZone from './BetZone';
+import Stats from './Stats';
+import Colors from './Colors';
+import Notifications from './Notifications';
 
 export default class Wheel {
   constructor(scene) {
@@ -37,8 +37,8 @@ export default class Wheel {
 
       const text = this.scene.add
         .text(centerX, centerY, this.scene.valueNumbersWheel[i], {
-          font: "bold 30px Arial",
-          fill: "white",
+          font: 'bold 30px Arial',
+          fill: 'white',
         })
         .setOrigin(0.5)
         .setRotation(startAngle + (endAngle - startAngle) / 2);
@@ -54,26 +54,21 @@ export default class Wheel {
   };
 
   createButtonOnWheel = () => {
-    this.buttonOnWheel = this.scene.add
-      .circle(0, 0, 50, 0xffa500)
-      .setStrokeStyle(8, 0xffffff);
+    this.buttonOnWheel = this.scene.add.circle(0, 0, 50, 0xffa500).setStrokeStyle(8, 0xffffff);
 
     this.buttonOnWheelText = this.scene.add
-      .text(0, 0, "SPIN", {
-        font: "bold 30px Arial",
-        fill: "white",
+      .text(0, 0, 'SPIN', {
+        font: 'bold 30px Arial',
+        fill: 'white',
       })
       .setOrigin(0.5);
 
     this.containerButtonOnWheel = this.scene.add
-      .container(this.scene.x / 2, 250, [
-        this.buttonOnWheel,
-        this.buttonOnWheelText,
-      ])
+      .container(this.scene.x / 2, 250, [this.buttonOnWheel, this.buttonOnWheelText])
       .setSize(85, 85)
       .setInteractive()
       .on(
-        "pointerdown",
+        'pointerdown',
         () => {
           this.spin(this.scene);
         },
@@ -82,14 +77,7 @@ export default class Wheel {
   };
 
   createArrowForWheel = () => {
-    const triangle = new Phaser.Geom.Triangle(
-      this.scene.x / 2,
-      70,
-      this.scene.x / 2 - 30,
-      20,
-      this.scene.x / 2 + 30,
-      20
-    );
+    const triangle = new Phaser.Geom.Triangle(this.scene.x / 2, 70, this.scene.x / 2 - 30, 20, this.scene.x / 2 + 30, 20);
 
     const graphicsForTriangle = this.scene.add
       .graphics({
@@ -100,52 +88,38 @@ export default class Wheel {
       .strokeTriangleShape(triangle);
   };
 
-  spin = (context) => {
+  spin = context => {
     if (context.state.balance && !context.state.currentBet) {
-      this.notifications.infoNotification("Place your bet!");
+      this.notifications.infoNotification('Place your bet!');
       return;
     }
 
     if (!context.state.valueChip.length) {
-      this.notifications.infoNotification("Place your chip!");
+      this.notifications.infoNotification('Place your chip!');
       return;
     }
 
     if (!context.state.currentBet) {
-      this.notifications.alertNotification("Not enough funds to bet!");
+      this.notifications.alertNotification('Not enough funds to bet!');
       return;
     }
 
-    const randomWinNumber = Phaser.Utils.Array.GetRandom(
-      context.valueNumbersWheel
-    );
+    const randomWinNumber = Phaser.Utils.Array.GetRandom(context.valueNumbersWheel);
 
     if (randomWinNumber === 0) {
       context.state.valueWheel = {
         value: randomWinNumber,
-        color: "green",
+        color: 'green',
       };
-    } else if (
-      randomWinNumber === 3 ||
-      randomWinNumber === 4 ||
-      randomWinNumber === 8 ||
-      randomWinNumber === 7 ||
-      randomWinNumber === 10
-    ) {
+    } else if (randomWinNumber === 3 || randomWinNumber === 4 || randomWinNumber === 8 || randomWinNumber === 7 || randomWinNumber === 10) {
       context.state.valueWheel = {
         value: randomWinNumber,
-        color: "red",
+        color: 'red',
       };
-    } else if (
-      randomWinNumber === 1 ||
-      randomWinNumber === 2 ||
-      randomWinNumber === 5 ||
-      randomWinNumber === 6 ||
-      randomWinNumber === 9
-    ) {
+    } else if (randomWinNumber === 1 || randomWinNumber === 2 || randomWinNumber === 5 || randomWinNumber === 6 || randomWinNumber === 9) {
       context.state.valueWheel = {
         value: randomWinNumber,
-        color: "black",
+        color: 'black',
       };
     }
 
@@ -160,12 +134,11 @@ export default class Wheel {
         targets: this.containerWheel,
         angle: this.targetAngle,
         duration: this.spinDuration,
-        ease: "Cubic.easeOut",
+        ease: 'Cubic.easeOut',
         onComplete: () => {
           this.isSpinning = false;
           this.buttonOnWheelText.setText(randomWinNumber);
-          this.buttonOnWheel.fillColor =
-            this.colors.currentColorHex(randomWinNumber);
+          this.buttonOnWheel.fillColor = this.colors.currentColorHex(randomWinNumber);
           this.valueWheelChange(context);
           context.autoStart.startAutoSpinInterval();
           if (!context.state.autoStart) {
@@ -177,8 +150,8 @@ export default class Wheel {
   };
 
   onSetDefaultTextButton = () => {
-    this.buttonOnWheelText.setText("SPIN");
-    this.buttonOnWheel.fillColor = "0xffa500";
+    this.buttonOnWheelText.setText('SPIN');
+    this.buttonOnWheel.fillColor = '0xffa500';
   };
 
   currentAngleRotate(number) {
@@ -207,20 +180,13 @@ export default class Wheel {
     }
   }
 
-  valueWheelChange = (context) => {
-    context.state.valueChip.forEach((object) => {
+  valueWheelChange = context => {
+    context.state.valueChip.forEach(object => {
       if (object?.value === context.state.valueWheel?.value) {
-        (context.state.balance += object.currentBet * 8),
-          (context.state.currentWin = object.currentBet * 8),
-          this.stats.createStats(this.scene);
+        (context.state.balance += object.currentBet * 8), (context.state.currentWin = object.currentBet * 8), this.stats.createStats(this.scene);
         this.notifications.successNotification(object, 8);
-      } else if (
-        object?.value !== context.state.valueWheel?.value &&
-        object?.color === context.state.valueWheel.color
-      ) {
-        (context.state.balance += object.currentBet * 2),
-          (context.state.currentWin = object.currentBet * 2),
-          this.stats.createStats(this.scene);
+      } else if (object?.value !== context.state.valueWheel?.value && object?.color === context.state.valueWheel.color) {
+        (context.state.balance += object.currentBet * 2), (context.state.currentWin = object.currentBet * 2), this.stats.createStats(this.scene);
         this.notifications.successNotification(object, 2);
         return;
       } else if (object?.value !== context.state.valueWheel?.value) {
@@ -233,13 +199,8 @@ export default class Wheel {
 
     if (context.state.autoStart) {
       context.state.balance -= context.state.generalBetSum;
-      if (
-        context.state.balance === 0 &&
-        context.state.balance < context.state.currentBet
-      ) {
-        this.notifications.alertNotification(
-          "Top up your balance to continue playing!"
-        )((context.state.autoStart = false)),
+      if (context.state.balance === 0 && context.state.balance < context.state.currentBet) {
+        this.notifications.alertNotification('Top up your balance to continue playing!')((context.state.autoStart = false)),
           (context.state.balance = 0),
           (context.state.currentBet = 0),
           (context.state.valueChip = []);

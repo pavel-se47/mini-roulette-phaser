@@ -1,8 +1,8 @@
-import Chip from "./Chip";
-import Stats from "./Stats";
-import BetZone from "./BetZone";
-import Colors from "./Colors";
-import Notifications from "./Notifications";
+import Chip from './Chip';
+import Stats from './Stats';
+import BetZone from './BetZone';
+import Colors from './Colors';
+import Notifications from './Notifications';
 
 export default class ChipZone {
   constructor(scene) {
@@ -15,16 +15,11 @@ export default class ChipZone {
   }
 
   createChipZone = () => {
-    const chipZoneText = this.scene.add.text(
-      this.scene.x / 2 - 90,
-      this.scene.y / 2 + 30,
-      "Chip zone",
-      {
-        font: "bold 30px Arial",
-        fill: "white",
-        align: "center",
-      }
-    );
+    const chipZoneText = this.scene.add.text(this.scene.x / 2 - 90, this.scene.y / 2 + 30, 'Chip zone', {
+      font: 'bold 30px Arial',
+      fill: 'white',
+      align: 'center',
+    });
 
     for (let i = 0; i < this.scene.sectors; i += 1) {
       const w = 70;
@@ -46,20 +41,12 @@ export default class ChipZone {
         y = 170 + i * 80;
       }
 
-      const chipNumber = new Chip(
-        this.scene,
-        x,
-        y,
-        w,
-        h,
-        this.scene.valueColorsWheel[i],
-        this.scene.valueNumbersWheel[i]
-      )
+      const chipNumber = new Chip(this.scene, x, y, w, h, this.scene.valueColorsWheel[i], this.scene.valueNumbersWheel[i])
         .setSize(w, h)
         .setOrigin(0.5)
         .setInteractive()
         .on(
-          "pointerdown",
+          'pointerdown',
           () => {
             this.onSetChip(chipNumber.n);
           },
@@ -67,24 +54,24 @@ export default class ChipZone {
         );
     }
 
-    const chipAR = new Chip(this.scene, 980, 970, 150, 70, "0xff0000", "AR")
+    const chipAR = new Chip(this.scene, 980, 970, 150, 70, '0xff0000', 'AR')
       .setSize(150, 70)
       .setOrigin(0.5)
       .setInteractive()
       .on(
-        "pointerdown",
+        'pointerdown',
         () => {
           this.onSetChip(chipAR.n);
         },
         this.scene
       );
 
-    const chipAB = new Chip(this.scene, 980, 890, 150, 70, "0x000000", "AB")
+    const chipAB = new Chip(this.scene, 980, 890, 150, 70, '0x000000', 'AB')
       .setSize(150, 70)
       .setOrigin(0.5)
       .setInteractive()
       .on(
-        "pointerdown",
+        'pointerdown',
         () => {
           this.onSetChip(chipAB.n);
         },
@@ -92,44 +79,38 @@ export default class ChipZone {
       );
   };
 
-  onSetChip = (value) => {
+  onSetChip = value => {
     let foundMatch = false;
 
-    if (typeof value !== "number") {
+    if (typeof value !== 'number') {
       this.scene.state.limit = 100;
       if (this.scene.state.currentBet > 100) {
-        this.notifications.alertNotification(
-          "You have exceeded the current limit!"
-        );
+        this.notifications.alertNotification('You have exceeded the current limit!');
         return;
       }
     } else {
       this.scene.state.limit = 20;
       if (this.scene.state.currentBet > 20) {
-        this.notifications.alertNotification(
-          "You have exceeded the current limit!"
-        );
+        this.notifications.alertNotification('You have exceeded the current limit!');
         return;
       }
     }
 
     if (this.scene.state.currentBet > this.scene.state.balance) {
-      this.notifications.alertNotification("Not enough funds to bet!");
+      this.notifications.alertNotification('Not enough funds to bet!');
       this.scene.state.currentBet = 0;
       return;
     }
 
-    this.scene.state.valueChip.forEach((object) => {
+    this.scene.state.valueChip.forEach(object => {
       if (object.value === value) {
-        this.notifications.alertNotification(
-          "You have already placed a bet on this zone!"
-        );
+        this.notifications.alertNotification('You have already placed a bet on this zone!');
         foundMatch = true;
       }
     });
 
     if (!this.scene.state.currentBet) {
-      this.notifications.infoNotification("Place your bet!");
+      this.notifications.infoNotification('Place your bet!');
       return;
     }
 
@@ -155,31 +136,22 @@ export default class ChipZone {
   };
 
   createButtonClearChipZone = () => {
-    const clearChipZoneRectangle = this.scene.add.rectangle(
-      0,
-      0,
-      180,
-      80,
-      0xffffff
-    );
+    const clearChipZoneRectangle = this.scene.add.rectangle(0, 0, 180, 80, 0xffffff);
 
     const clearChipZoneText = this.scene.add
-      .text(0, 0, "Clear chip zone", {
-        font: "bold 20px Arial",
-        fill: "black",
-        align: "center",
+      .text(0, 0, 'Clear chip zone', {
+        font: 'bold 20px Arial',
+        fill: 'black',
+        align: 'center',
       })
       .setOrigin(0.5);
 
     this.containerButtonClearChipZone = this.scene.add
-      .container(this.scene.x / 2 + 220, 965, [
-        clearChipZoneRectangle,
-        clearChipZoneText,
-      ])
+      .container(this.scene.x / 2 + 220, 965, [clearChipZoneRectangle, clearChipZoneText])
       .setSize(180, 80)
       .setInteractive()
       .on(
-        "pointerdown",
+        'pointerdown',
         () => {
           if (!this.scene.wheel.isSpinning) {
             this.scene.state.balance += this.scene.state.generalBetSum;
@@ -199,7 +171,7 @@ export default class ChipZone {
   };
 
   onSetDefaultTextButton = () => {
-    this.scene.wheel.buttonOnWheelText.setText("SPIN");
-    this.scene.wheel.buttonOnWheel.fillColor = "0xffa500";
+    this.scene.wheel.buttonOnWheelText.setText('SPIN');
+    this.scene.wheel.buttonOnWheel.fillColor = '0xffa500';
   };
 }

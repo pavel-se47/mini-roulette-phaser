@@ -1,6 +1,6 @@
 export default class PreloadScene extends Phaser.Scene {
   constructor() {
-    super("Preload");
+    super('Preload');
   }
 
   preload() {
@@ -8,14 +8,10 @@ export default class PreloadScene extends Phaser.Scene {
   }
 
   create() {
-    this.scene.start("Start");
+    this.scene.start('Start');
   }
 
   createBackground() {
-    this.add.sprite(
-      this.sys.game.config.width / 2,
-      this.sys.game.config.height / 2,
-      "bg0"
-    );
+    this.add.sprite(this.sys.game.config.width / 2, this.sys.game.config.height / 2, 'bg0');
   }
 }

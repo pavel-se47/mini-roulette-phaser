@@ -1,13 +1,13 @@
-import Wheel from "../classes/Wheel";
-import BetZone from "../classes/BetZone";
-import ChipZone from "../classes/ChipZone";
-import Rules from "../classes/Rules";
-import Stats from "../classes/Stats";
-import AutoStart from "../classes/AutoStart";
+import Wheel from '../classes/Wheel';
+import BetZone from '../classes/BetZone';
+import ChipZone from '../classes/ChipZone';
+import Rules from '../classes/Rules';
+import Stats from '../classes/Stats';
+import AutoStart from '../classes/AutoStart';
 
 export default class GameScene extends Phaser.Scene {
   constructor() {
-    super("GameScene");
+    super('GameScene');
     this.x = null;
     this.y = null;
     this.bets = [];
@@ -15,10 +15,7 @@ export default class GameScene extends Phaser.Scene {
     this.valueNumberBet = [10, 20, 50, 100, 150];
     this.valueColorsBet = [0xf5deb3, 0xadff2f, 0x0000ff, 0xff00ff, 0xffa500];
     this.valueNumbersWheel = [0, 1, 3, 6, 4, 2, 8, 5, 7, 9, 10];
-    this.valueColorsWheel = [
-      0x00cc00, 0x000000, 0xff0000, 0x000000, 0xff0000, 0x000000, 0xff0000,
-      0x000000, 0xff0000, 0x000000, 0xff0000,
-    ];
+    this.valueColorsWheel = [0x00cc00, 0x000000, 0xff0000, 0x000000, 0xff0000, 0x000000, 0xff0000, 0x000000, 0xff0000, 0x000000, 0xff0000];
 
     this.state = {
       valueWheel: null,
@@ -61,10 +58,6 @@ export default class GameScene extends Phaser.Scene {
   }
 
   createBackground() {
-    this.add.sprite(
-      this.sys.game.config.width / 2,
-      this.sys.game.config.height / 2,
-      "bg1"
-    );
+    this.add.sprite(this.sys.game.config.width / 2, this.sys.game.config.height / 2, 'bg1');
   }
 }

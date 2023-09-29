@@ -1,6 +1,6 @@
-import { alert, info, error, success } from "@pnotify/core";
-import "@pnotify/core/dist/PNotify.css";
-import "@pnotify/core/dist/BrightTheme.css";
+import { alert, info, error, success } from '@pnotify/core';
+import '@pnotify/core/dist/PNotify.css';
+import '@pnotify/core/dist/BrightTheme.css';
 
 export default class Notifications {
   constructor() {}
@@ -11,35 +11,35 @@ export default class Notifications {
       text: `You win ${object.currentBet * coef} credits!`,
       delay: 1000,
       hide: true,
-      width: "400px",
+      width: '400px',
     });
   };
 
-  errorNotification = (object) => {
+  errorNotification = object => {
     error({
       title: `Sorry, you bet ${object.value} lost :(`,
       text: `You lost ${object.currentBet} credits!`,
       delay: 1000,
       hide: true,
-      width: "400px",
+      width: '400px',
     });
   };
 
-  alertNotification = (title) => {
+  alertNotification = title => {
     alert({
       title: title,
       delay: 1000,
       hide: true,
-      width: "400px",
+      width: '400px',
     });
   };
 
-  infoNotification = (title) => {
+  infoNotification = title => {
     info({
       title: title,
       delay: 1000,
       hide: true,
-      width: "400px",
+      width: '400px',
     });
   };
 }

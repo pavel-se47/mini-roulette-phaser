@@ -7,23 +7,15 @@ export default class Chip extends Phaser.GameObjects.Sprite {
     this.h = h;
     this.c = c;
     this.n = n;
-    this.createChipZone(
-      context,
-      this.x,
-      this.y,
-      this.w,
-      this.h,
-      this.c,
-      this.n
-    );
+    this.createChipZone(context, this.x, this.y, this.w, this.h, this.c, this.n);
   }
 
   createChipZone(context, x, y, w, h, c, n) {
     const rec = context.add.rectangle(x, y, w, h, c);
     const text = context.add
       .text(x, y, n, {
-        font: "bold 24px Arial",
-        fill: "white",
+        font: 'bold 24px Arial',
+        fill: 'white',
       })
       .setOrigin(0.5);
   }
