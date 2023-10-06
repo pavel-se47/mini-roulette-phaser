@@ -1,47 +1,81 @@
 import Chip from './Chip';
-import Stats from './Stats';
-import BetZone from './BetZone';
 import Colors from './Colors';
-import Notifications from './Notifications';
+import limits from '../../limits.json';
 
 export default class ChipZone {
   constructor(scene) {
     this.scene = scene;
     this.containerButtonClearChipZone = null;
-    this.betZone = new BetZone(this.scene);
-    this.stats = new Stats();
-    this.colors = new Colors();
-    this.notifications = new Notifications();
+    this.colors = new Colors(this);
+    this.foundMatch = false;
   }
 
-  createChipZone = () => {
-    const chipZoneText = this.scene.add.text(this.scene.x / 2 - 90, this.scene.y / 2 + 30, 'Chip zone', {
+  createChipZone() {
+    const chipZoneText = this.scene.add.text(this.scene.x / 2 - 80, this.scene.y / 2 + 30, 'Chip zone', {
       font: 'bold 30px Arial',
       fill: 'white',
       align: 'center',
     });
 
-    for (let i = 0; i < this.scene.sectors; i += 1) {
+    const valueNumbersWheelCopy = JSON.parse(JSON.stringify(this.scene.valueNumbersWheel));
+    const valueColorsWheelCopy = JSON.parse(JSON.stringify(this.scene.valueColorsWheel));
+
+    valueNumbersWheelCopy.push('AR');
+    valueColorsWheelCopy.push(16711680);
+    valueNumbersWheelCopy.push('AB');
+    valueColorsWheelCopy.push(0);
+
+    for (let i = 0; i < this.scene.sectors + 2; i += 1) {
       const w = 70;
       const h = 70;
       let x;
       let y;
 
-      if (i <= 2) {
-        x = this.scene.x / 2 - 100;
-        y = 650 + i * 80;
-      } else if (i <= 5) {
-        x = this.scene.x / 2 - 20;
-        y = 410 + i * 80;
-      } else if (i <= 8) {
-        x = this.scene.x / 2 + 60;
-        y = 170 + i * 80;
+      if (i <= 6) {
+        x = 720 + i * 80;
+        y = this.scene.y / 2 + 110;
+      } else if (i <= 13) {
+        x = 160 + i * 80;
+        y = this.scene.y / 2 + 190;
+      } else if (i <= 20) {
+        x = -400 + i * 80;
+        y = this.scene.y / 2 + 270;
+      } else if (i <= 27) {
+        x = -960 + i * 80;
+        y = this.scene.y / 2 + 350;
+      } else if (i <= 34) {
+        x = -1520 + i * 80;
+        y = this.scene.y / 2 + 430;
       } else {
-        x = this.scene.x / 2 - 100;
-        y = 170 + i * 80;
+        x = -2080 + i * 80;
+        y = this.scene.y / 2 + 510;
       }
 
-      const chipNumber = new Chip(this.scene, x, y, w, h, this.scene.valueColorsWheel[i], this.scene.valueNumbersWheel[i])
+      // const chipAR = new Chip(this.scene, 980, 970, 70, 70, '0xff0000', 'AR')
+      //   .setSize(70, 70)
+      //   .setOrigin(0.5)
+      //   .setInteractive()
+      //   .on(
+      //     'pointerdown',
+      //     () => {
+      //       this.onSetChip(chipAR.n);
+      //     },
+      //     this.scene
+      //   );
+
+      // const chipAB = new Chip(this.scene, 980, 890, 70, 70, '0x000000', 'AB')
+      //   .setSize(70, 70)
+      //   .setOrigin(0.5)
+      //   .setInteractive()
+      //   .on(
+      //     'pointerdown',
+      //     () => {
+      //       this.onSetChip(chipAB.n);
+      //     },
+      //     this.scene
+      //   );
+
+      const chipNumber = new Chip(this.scene, x, y, w, h, valueColorsWheelCopy[i], valueNumbersWheelCopy[i])
         .setSize(w, h)
         .setOrigin(0.5)
         .setInteractive()
@@ -53,89 +87,31 @@ export default class ChipZone {
           this.scene
         );
     }
+  }
 
-    const chipAR = new Chip(this.scene, 980, 970, 150, 70, '0xff0000', 'AR')
-      .setSize(150, 70)
-      .setOrigin(0.5)
-      .setInteractive()
-      .on(
-        'pointerdown',
-        () => {
-          this.onSetChip(chipAR.n);
-        },
-        this.scene
-      );
-
-    const chipAB = new Chip(this.scene, 980, 890, 150, 70, '0x000000', 'AB')
-      .setSize(150, 70)
-      .setOrigin(0.5)
-      .setInteractive()
-      .on(
-        'pointerdown',
-        () => {
-          this.onSetChip(chipAB.n);
-        },
-        this.scene
-      );
-  };
-
-  onSetChip = value => {
-    let foundMatch = false;
-
-    if (typeof value !== 'number') {
-      this.scene.state.limit = 100;
-      if (this.scene.state.currentBet > 100) {
-        this.notifications.alertNotification('You have exceeded the current limit!');
-        return;
+  onSetChip(value) {
+    if (this.scene.checkBet(value)) {
+      if (!this.foundMatch) {
+        (this.scene.state.valueChip = [
+          ...this.scene.state.valueChip,
+          {
+            value: value,
+            color: this.colors.currentColor(value),
+            currentBet: this.scene.state.currentBet,
+          },
+        ]),
+          (this.scene.state.balance -= this.scene.state.currentBet),
+          this.scene.stats.createStats(this.scene);
+        this.scene.state.valueWheel = null;
       }
-    } else {
-      this.scene.state.limit = 20;
-      if (this.scene.state.currentBet > 20) {
-        this.notifications.alertNotification('You have exceeded the current limit!');
-        return;
-      }
+
+      this.scene.betZone.onSetBet();
+      this.scene.betZone.calculateGeneralBetSum();
+      this.onSetDefaultTextButton();
     }
+  }
 
-    if (this.scene.state.currentBet > this.scene.state.balance) {
-      this.notifications.alertNotification('Not enough funds to bet!');
-      this.scene.state.currentBet = 0;
-      return;
-    }
-
-    this.scene.state.valueChip.forEach(object => {
-      if (object.value === value) {
-        this.notifications.alertNotification('You have already placed a bet on this zone!');
-        foundMatch = true;
-      }
-    });
-
-    if (!this.scene.state.currentBet) {
-      this.notifications.infoNotification('Place your bet!');
-      return;
-    }
-
-    if (!foundMatch) {
-      (this.scene.state.valueChip = [
-        ...this.scene.state.valueChip,
-        {
-          value: value,
-          color: this.colors.currentColor(value),
-          colorHex: this.colors.currentColorHex(value),
-          currentBet: this.scene.state.currentBet,
-        },
-      ]),
-        (this.scene.state.balance -= this.scene.state.currentBet),
-        this.stats.createStats(this.scene);
-
-      this.scene.state.valueWheel = null;
-    }
-
-    this.betZone.onSetBet();
-    this.betZone.calculateGeneralBetSum();
-    this.onSetDefaultTextButton();
-  };
-
-  createButtonClearChipZone = () => {
+  createButtonClearChipZone() {
     const clearChipZoneRectangle = this.scene.add.rectangle(0, 0, 180, 80, 0xffffff);
 
     const clearChipZoneText = this.scene.add
@@ -147,7 +123,7 @@ export default class ChipZone {
       .setOrigin(0.5);
 
     this.containerButtonClearChipZone = this.scene.add
-      .container(this.scene.x / 2 + 220, 965, [clearChipZoneRectangle, clearChipZoneText])
+      .container(this.scene.x / 2 + 400, 965, [clearChipZoneRectangle, clearChipZoneText])
       .setSize(180, 80)
       .setInteractive()
       .on(
@@ -159,19 +135,19 @@ export default class ChipZone {
             this.scene.state.valueWheel = null;
             this.scene.state.generalBetSum = 0;
             this.scene.state.currentBet = 10;
-            this.scene.state.limit = 20;
+            this.scene.state.limit = limits.numbers;
             this.scene.state.currentWin = 0;
-            this.betZone.destroyBets(this.scene);
+            this.scene.betZone.destroyBets();
             this.onSetDefaultTextButton();
-            this.stats.createStats(this.scene);
+            this.scene.stats.createStats(this.scene);
           }
         },
         this.scene
       );
-  };
+  }
 
-  onSetDefaultTextButton = () => {
+  onSetDefaultTextButton() {
     this.scene.wheel.buttonOnWheelText.setText('SPIN');
     this.scene.wheel.buttonOnWheel.fillColor = '0xffa500';
-  };
+  }
 }

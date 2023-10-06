@@ -1,23 +1,25 @@
 export default class Colors {
-  constructor() {}
+  constructor(scene) {
+    this.scene = scene;
+  }
 
-  currentColor = value => {
-    if (value === 0) {
+  currentColor(value) {
+    if (this.scene.scene.greenValue.includes(value)) {
       return 'green';
-    } else if (value === 3 || value === 4 || value === 8 || value === 7 || value === 10 || value === 'AR') {
+    } else if (this.scene.scene.redValue.includes(value)) {
       return 'red';
-    } else if (value === 1 || value === 2 || value === 5 || value === 6 || value === 9 || value === 'AB') {
+    } else if (this.scene.scene.blackValue.includes(value)) {
       return 'black';
     }
-  };
+  }
 
-  currentColorHex = value => {
-    if (value === 0) {
+  currentColorHex(value) {
+    if (this.scene.scene.greenValue.includes(value)) {
       return '0x00cc00';
-    } else if (value === 3 || value === 4 || value === 8 || value === 7 || value === 10 || value === 'AR') {
+    } else if (this.scene.scene.redValue.includes(value)) {
       return '0xff0000';
-    } else if (value === 1 || value === 2 || value === 5 || value === 6 || value === 9 || value === 'AB') {
+    } else if (this.scene.scene.blackValue.includes(value)) {
       return '0x000000';
     }
-  };
+  }
 }
