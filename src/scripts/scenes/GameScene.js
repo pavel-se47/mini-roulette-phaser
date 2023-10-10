@@ -11,25 +11,25 @@ import limits from '../../limits.json';
 export default class GameScene extends Phaser.Scene {
   constructor() {
     super('GameScene');
-    this.sectors = 20;
+    this.sectors = 37;
     this.valueNumberBet = [10, 20, 50, 100, 150];
     this.valueColorsBet = [0xf5deb3, 0xadff2f, 0x0000ff, 0xff00ff, 0xffa500];
     this.greenValue = [0];
-    this.redValue = [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36];
-    this.blackValue = [2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35];
+    this.redValue = [32, 19, 21, 25, 34, 27, 36, 30, 23, 5, 16, 1, 14, 9, 18, 7, 12, 3];
+    this.blackValue = [15, 4, 2, 17, 6, 13, 11, 8, 10, 24, 33, 20, 31, 22, 29, 28, 35, 26];
     this.valueColors = [0x00cc00, 0x000000, 0xff0000];
     this.valueNumbersWheel = [];
+    this.valueNumbersWheelCopy = [];
     this.valueColorsWheel = [];
+    this.valueColorsWheelCopy = [];
 
     this.state = {
-      valueWheel: null,
-      valueChip: [],
-      generalBetSum: 0,
       balance: 1000,
       currentBet: 10,
       currentWin: 0,
+      generalBetSum: 0,
+      valueWheel: null,
       valueChip: [],
-      limit: limits.numbers,
       autoStart: false,
       timer: 10,
     };
@@ -54,6 +54,7 @@ export default class GameScene extends Phaser.Scene {
     this.y = this.sys.game.config.height;
     this.createArrNum(this.sectors);
     this.createArrColorForNum(this.valueNumbersWheel, this.valueColors);
+    this.createCopyArr();
 
     this.wheel.createWheel();
     this.wheel.createButtonOnWheel();
@@ -66,6 +67,12 @@ export default class GameScene extends Phaser.Scene {
     this.rules.createButtonRulesAndLimits();
   }
 
+  checkSectors() {
+    if (this.sectors < 3 || this.sectors > 37) {
+      throw new Error('The number of sectors can be set from 3 to 37');
+    }
+  }
+
   createBackground() {
     this.add.sprite(this.sys.game.config.width / 2, this.sys.game.config.height / 2, 'bg1');
   }
@@ -75,10 +82,10 @@ export default class GameScene extends Phaser.Scene {
 
     for (let i = 0; i < sectors; i += 1) {
       if (this.valueNumbersWheel.length !== sectors) {
-        this.valueNumbersWheel.push(this.blackValue[i]);
+        this.valueNumbersWheel.push(this.redValue[i]);
       }
       if (this.valueNumbersWheel.length !== sectors) {
-        this.valueNumbersWheel.push(this.redValue[i]);
+        this.valueNumbersWheel.push(this.blackValue[i]);
       }
     }
   }
@@ -89,11 +96,11 @@ export default class GameScene extends Phaser.Scene {
         case this.greenValue.includes(arrNum[i]):
           this.valueColorsWheel.push(arrColor[0]);
           break;
-        case this.blackValue.includes(arrNum[i]):
-          this.valueColorsWheel.push(arrColor[1]);
-          break;
         case this.redValue.includes(arrNum[i]):
           this.valueColorsWheel.push(arrColor[2]);
+          break;
+        case this.blackValue.includes(arrNum[i]):
+          this.valueColorsWheel.push(arrColor[1]);
           break;
 
         default:
@@ -102,7 +109,20 @@ export default class GameScene extends Phaser.Scene {
     }
   }
 
-  checkBet(value) {
+  createCopyArr() {
+    this.valueNumbersWheelCopy = JSON.parse(JSON.stringify(this.valueNumbersWheel));
+    this.valueColorsWheelCopy = JSON.parse(JSON.stringify(this.valueColorsWheel));
+
+    this.valueNumbersWheelCopy.push('AR');
+    this.valueColorsWheelCopy.push(16711680);
+    this.valueNumbersWheelCopy.push('AB');
+    this.valueColorsWheelCopy.push(0);
+  }
+
+  checkBet(chip) {
+    let value = chip.number;
+    let betSum = chip.value + this.state.currentBet;
+
     if (!this.state.currentBet) {
       this.notifications.infoNotification('Place your bet!');
       return;
@@ -114,23 +134,14 @@ export default class GameScene extends Phaser.Scene {
       return;
     }
 
-    this.state.valueChip.forEach(object => {
-      if (object.value === value) {
-        this.notifications.alertNotification('You have already placed a bet on this zone!');
-        this.chipZone.foundMatch = true;
-      }
-    });
-
     if (typeof value !== 'number') {
-      this.state.limit = limits.colors;
-      if (this.state.currentBet > limits.colors) {
-        this.notifications.alertNotification('You have exceeded the current limit!');
+      if (betSum > limits.colors || this.state.currentBet > limits.colors) {
+        this.notifications.alertNotification('You have exceeded the current limit for colors!');
         return;
       }
     } else {
-      this.state.limit = limits.numbers;
-      if (this.state.currentBet > limits.numbers) {
-        this.notifications.alertNotification('You have exceeded the current limit!');
+      if (betSum > limits.numbers || this.state.currentBet > limits.numbers) {
+        this.notifications.alertNotification('You have exceeded the current limit for numbers!');
         return;
       }
     }
@@ -144,11 +155,5 @@ export default class GameScene extends Phaser.Scene {
 
   pay() {
     this.analytics.valueWheelCheck();
-  }
-
-  checkSectors() {
-    if (this.sectors > 37) {
-      throw new Error('Maximum number of sectors - 37 ');
-    }
   }
 }

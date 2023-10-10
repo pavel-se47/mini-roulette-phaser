@@ -7,7 +7,6 @@ export default class Wheel {
     this.spinDuration = 3000;
     this.containerWheel = null;
     this.textWheel = [];
-
     this.colors = new Colors();
   }
 
@@ -84,36 +83,39 @@ export default class Wheel {
   }
 
   spin() {
-    if (this.scene.checkBet()) {
-      if (!this.scene.state.valueChip.length) {
-        this.notifications.infoNotification('Place your chip!');
-        return;
-      }
+    if (!this.scene.state.valueChip.length) {
+      this.scene.notifications.infoNotification('Place your chip!');
+      return;
+    }
 
-      this.scene.setValueWheel();
-      this.onSetDefaultTextButton();
-      this.targetAngle = 360 + this.currentAngleRotate(this.scene.state.valueWheel.value);
+    this.scene.setValueWheel();
+    this.onSetDefaultTextButton();
+    this.targetAngle = this.currentAngleRotate(this.scene.state.valueWheel.value);
 
-      if (!this.isSpinning) {
-        this.isSpinning = true;
+    if (!this.isSpinning) {
+      this.isSpinning = true;
 
-        this.scene.tweens.add({
-          targets: this.containerWheel,
-          angle: this.targetAngle,
-          duration: this.spinDuration,
-          ease: 'Cubic.easeOut',
-          onComplete: () => {
-            this.isSpinning = false;
-            this.buttonOnWheelText.setText(this.scene.state.valueWheel.value);
-            this.buttonOnWheel.fillColor = this.scene.state.valueWheel.colorHex;
-            this.scene.pay();
-            this.scene.autoStart.startAutoSpinInterval();
-            if (!this.scene.state.autoStart) {
-              this.scene.betZone.destroyBets();
-            }
-          },
-        });
-      }
+      this.scene.tweens.add({
+        targets: this.containerWheel,
+        angle: this.targetAngle,
+        duration: this.spinDuration,
+        ease: 'Cubic.easeOut',
+        onComplete: () => {
+          this.isSpinning = false;
+          this.buttonOnWheelText.setText(this.scene.state.valueWheel.value);
+          this.buttonOnWheel.fillColor = this.scene.state.valueWheel.colorHex;
+          this.scene.pay();
+          this.scene.autoStart.startAutoSpinInterval();
+          if (!this.scene.state.autoStart) {
+            this.scene.chipZone.chipArray.forEach(obj => {
+              if (obj.value) {
+                obj.value = 0;
+                obj.valueText.setText('');
+              }
+            });
+          }
+        },
+      });
     }
   }
 
@@ -128,7 +130,7 @@ export default class Wheel {
 
     for (let i = 0; i < this.scene.sectors; i += 1) {
       if (this.scene.valueNumbersWheel[i] === number) {
-        return startAngle - currAngle * i;
+        return 360 + startAngle - currAngle * i;
       }
     }
   }
