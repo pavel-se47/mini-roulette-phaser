@@ -105,22 +105,26 @@ export default class ChipZone {
       .setInteractive()
       .on(
         'pointerdown',
-        () => {
+        () => {  ///TODO эту функцию можно вынести из этой области
           if (!this.scene.wheel.isSpinning) {
             this.scene.state.valueChip = [];
             this.scene.state.valueWheel = null;
+            //TODO эту часть кода можно закинуть в отдельные функции
             this.scene.stats.totalBet = 0;
             this.scene.stats.totalBetText.setText('Your total bet \n' + this.scene.stats.totalBet);
             this.scene.stats.currentBet = 10;
             this.scene.stats.currentBetText.setText('Your selected bet \n' + this.scene.stats.currentBet);
             this.scene.stats.currentWin = 0;
             this.scene.stats.currentWinText.setText('Your current win \n' + this.scene.stats.currentWin);
+            //
+            //TODO эту часть кода так же можно закинуть в отдельную функцию
             this.chipArray.forEach(obj => {
               if (obj.value) {
                 obj.value = 0;
                 obj.valueText.setText('');
               }
             });
+            //
             this.onSetDefaultTextButton();
           }
         },
@@ -128,7 +132,7 @@ export default class ChipZone {
       );
   }
 
-  onSetDefaultTextButton() {
+  onSetDefaultTextButton() {  //TODO почему у chipZone есть метод, который обращается к другому объекту?
     this.scene.wheel.buttonOnWheelText.setText('SPIN');
     this.scene.wheel.buttonOnWheel.fillColor = '0xffa500';
   }

@@ -35,7 +35,7 @@ export default class BetZone {
         .on(
           'pointerdown',
           () => {
-            this.scene.stats.currentBet = this.scene.valueNumberBet[i];
+            this.scene.stats.currentBet = this.scene.valueNumberBet[i];     //TODO эту часть можно закинуть в отдельну. фукнцию
             this.scene.stats.currentBetText.setText('Your selected bet \n' + this.scene.stats.currentBet);
           },
           this.scene

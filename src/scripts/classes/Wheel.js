@@ -88,8 +88,10 @@ export default class Wheel {
 
   spin() {
     if (this.checkBeforeSpin()) {
+      //TODO эту часть кода так же можно закинуть в отдельную функцию
       this.scene.stats.balance -= this.scene.stats.totalBet;
       this.scene.stats.balanceText.setText('Your balance \n' + this.scene.stats.balance);
+      //
       this.scene.setValueWheel();
       this.onSetDefaultTextButton();
       this.targetAngle = this.currentAngleRotate(this.scene.state.valueWheel.value);
@@ -109,7 +111,7 @@ export default class Wheel {
             this.scene.autoStart.startAutoSpinInterval();
             if (!this.scene.state.autoStart) {
               this.scene.state.valueChip = [];
-              this.scene.chipZone.chipArray.forEach(obj => {
+              this.scene.chipZone.chipArray.forEach(obj => { //TODO эту часть кода так же можно закинуть в отдельную функцию
                 if (obj.value) {
                   obj.value = 0;
                   obj.valueText.setText('');
