@@ -22,26 +22,13 @@ export default class GameScene extends Phaser.Scene {
     this.valueNumbersWheelCopy = [];
     this.valueColorsWheel = [];
     this.valueColorsWheelCopy = [];
-
     this.state = {
-      balance: 1000,
-      currentBet: 10,
-      currentWin: 0,
-      generalBetSum: 0,
       valueWheel: null,
       valueChip: [],
       autoStart: false,
       timer: 10,
+      checkBet: false,
     };
-
-    this.autoStart = new AutoStart(this);
-    this.chipZone = new ChipZone(this);
-    this.betZone = new BetZone(this);
-    this.wheel = new Wheel(this);
-    this.rules = new Rules(this);
-    this.stats = new Stats(this);
-    this.analytics = new Analyt(this);
-    this.notifications = new Notifications();
   }
 
   preload() {
@@ -52,19 +39,28 @@ export default class GameScene extends Phaser.Scene {
   create() {
     this.x = this.sys.game.config.width;
     this.y = this.sys.game.config.height;
-    this.createArrNum(this.sectors);
-    this.createArrColorForNum(this.valueNumbersWheel, this.valueColors);
-    this.createCopyArr();
+    this.createGameFiled(this.sectors, this.valueNumbersWheel, this.valueColors);
 
-    this.wheel.createWheel();
-    this.wheel.createButtonOnWheel();
-    this.wheel.createArrowForWheel();
-    this.stats.createStats();
-    this.betZone.createBet();
-    this.chipZone.createChipZone();
-    this.chipZone.createButtonClearChipZone();
-    this.autoStart.createAutoStartPanel();
-    this.rules.createButtonRulesAndLimits();
+    this.notifications = new Notifications(this);
+    this.analytics = new Analyt(this);
+
+    this.wheel = new Wheel(this);
+    this.wheel.create();
+
+    this.stats = new Stats(this);
+    this.stats.create();
+
+    this.betZone = new BetZone(this);
+    this.betZone.create();
+
+    this.chipZone = new ChipZone(this);
+    this.chipZone.create();
+
+    this.autoStart = new AutoStart(this);
+    this.autoStart.create();
+
+    this.rules = new Rules(this);
+    this.rules.create();
   }
 
   checkSectors() {
@@ -75,6 +71,12 @@ export default class GameScene extends Phaser.Scene {
 
   createBackground() {
     this.add.sprite(this.sys.game.config.width / 2, this.sys.game.config.height / 2, 'bg1');
+  }
+
+  createGameFiled(sectors, numbers, colors) {
+    this.createArrNum(sectors);
+    this.createArrColorForNum(numbers, colors);
+    this.createCopyArr();
   }
 
   createArrNum(sectors) {
@@ -121,26 +123,26 @@ export default class GameScene extends Phaser.Scene {
 
   checkBet(chip) {
     let value = chip.number;
-    let betSum = chip.value + this.state.currentBet;
+    let betSum = chip.value + this.stats.currentBet;
 
-    if (!this.state.currentBet) {
+    if (!this.stats.currentBet) {
       this.notifications.infoNotification('Place your bet!');
       return;
     }
 
-    if (this.state.currentBet > this.state.balance) {
+    if (this.stats.currentBet > this.stats.balance) {
       this.notifications.alertNotification('Not enough funds to bet!');
-      this.state.currentBet = 0;
+      this.stats.currentBet = 0;
       return;
     }
 
     if (typeof value !== 'number') {
-      if (betSum > limits.colors || this.state.currentBet > limits.colors) {
+      if (betSum > limits.colors || this.stats.currentBet > limits.colors) {
         this.notifications.alertNotification('You have exceeded the current limit for colors!');
         return;
       }
     } else {
-      if (betSum > limits.numbers || this.state.currentBet > limits.numbers) {
+      if (betSum > limits.numbers || this.stats.currentBet > limits.numbers) {
         this.notifications.alertNotification('You have exceeded the current limit for numbers!');
         return;
       }

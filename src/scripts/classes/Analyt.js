@@ -42,39 +42,35 @@ export default class Analyt {
 
       for (let i = 0; i < payTable.length; i += 1) {
         let valuePt = payTable[i].value;
-        let valueCoef = payTable[i].coef;
+        let valuePtCoef = payTable[i].coef;
         if (
           (valueCh === valuePt && valueCh === valueWh) ||
           (valueCh === valuePt && valueCh !== valueWh && colorCh === colorWh && typeof valueCh === 'string')
         ) {
-          (this.scene.state.balance += bet * valueCoef), (this.scene.state.currentWin = bet * valueCoef), this.scene.stats.createStats(this.scene);
-          this.notifications.successNotification(object, valueCoef);
+          (this.scene.stats.balance += bet * valuePtCoef), (this.scene.stats.currentWin = bet * valuePtCoef), this.scene.stats.create();
+          this.notifications.successNotification(object, valuePtCoef);
         }
       }
 
       if ((valueCh !== valueWh && typeof valueCh === 'number') || colorCh !== colorWh) {
-        this.scene.state.currentWin = 0;
-        this.scene.state.generalBetSum = 0;
-        this.scene.stats.createStats(this.scene);
+        if (!this.scene.state.autoStart) {
+          this.scene.stats.generalBetSum = 0;
+        }
+        this.scene.stats.currentWin = 0;
+        this.scene.stats.create();
         this.notifications.errorNotification(object);
       }
     });
 
     if (this.scene.state.autoStart) {
-      this.scene.state.balance -= this.scene.state.generalBetSum;
-      if (this.scene.state.balance === 0 && this.scene.state.balance < this.scene.state.currentBet) {
+      if (this.scene.stats.balance === 0 && this.scene.stats.balance < this.scene.stats.currentBet) {
         this.notifications.alertNotification('Top up your balance to continue playing!')((this.scene.state.autoStart = false)),
-          (this.scene.state.balance = 0),
-          (this.scene.state.currentBet = 0),
-          (this.scene.state.generalBetSum = 0);
+          (this.scene.stats.balance = 0),
+          (this.scene.stats.currentBet = 0),
+          (this.scene.stats.generalBetSum = 0);
         this.scene.state.valueChip = [];
-        this.scene.stats.createStats(this.scene);
-        return;
+        this.scene.stats.create();
       }
-    } else {
-      this.scene.state.valueChip = [];
-      this.scene.state.generalBetSum = 0;
-      this.scene.stats.createStats(this.scene);
     }
   }
 }

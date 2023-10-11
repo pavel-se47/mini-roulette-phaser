@@ -10,6 +10,11 @@ export default class ChipZone {
     this.chipArray = [];
   }
 
+  create() {
+    this.createChipZone();
+    this.createButtonClearChipZone();
+  }
+
   createChipZone() {
     this.group = this.scene.add.container(this.scene.x / 2 - 250, this.scene.y / 2 + 100);
 
@@ -44,7 +49,7 @@ export default class ChipZone {
 
       chip.setCallback(() => {
         if (this.onSetChip(chip)) {
-          chip.value += this.scene.state.currentBet;
+          chip.value += this.scene.stats.currentBet;
           chip.valueText.setText(chip.value);
         }
       }, this.scene);
@@ -64,13 +69,17 @@ export default class ChipZone {
       {
         value: value,
         color: this.colors.currentColor(value),
-        currentBet: this.scene.state.currentBet,
+        currentBet: this.scene.stats.currentBet,
       },
     ];
 
-    this.scene.state.balance -= this.scene.state.currentBet;
-    this.scene.state.generalBetSum += this.scene.state.currentBet;
-    this.scene.stats.createStats(this.scene);
+    if (this.scene.stats.generalBetSum + this.scene.stats.currentBet > this.scene.stats.balance) {
+      this.scene.notifications.alertNotification('Not enough funds to bet!');
+      return;
+    }
+
+    this.scene.stats.generalBetSum += this.scene.stats.currentBet;
+    this.scene.stats.create();
     this.scene.state.valueWheel = null;
 
     this.scene.betZone.calculateGeneralBetSum();
@@ -98,12 +107,11 @@ export default class ChipZone {
         'pointerdown',
         () => {
           if (!this.scene.wheel.isSpinning) {
-            this.scene.state.balance += this.scene.state.generalBetSum;
             this.scene.state.valueChip = [];
             this.scene.state.valueWheel = null;
-            this.scene.state.generalBetSum = 0;
-            this.scene.state.currentBet = 10;
-            this.scene.state.currentWin = 0;
+            this.scene.stats.generalBetSum = 0;
+            this.scene.stats.currentBet = 10;
+            this.scene.stats.currentWin = 0;
             this.chipArray.forEach(obj => {
               if (obj.value) {
                 obj.value = 0;
@@ -111,7 +119,7 @@ export default class ChipZone {
               }
             });
             this.onSetDefaultTextButton();
-            this.scene.stats.createStats(this.scene);
+            this.scene.stats.create();
           }
         },
         this.scene

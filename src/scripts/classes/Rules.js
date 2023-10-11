@@ -6,6 +6,10 @@ export default class Rules {
     this.containerRules = null;
   }
 
+  create() {
+    this.createButtonRulesAndLimits();
+  }
+
   createButtonRulesAndLimits() {
     const buttonRules = this.scene.add.circle(1200, 420, 30, '0xffffff').setInteractive();
 

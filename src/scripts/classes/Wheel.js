@@ -6,11 +6,17 @@ export default class Wheel {
     this.isSpinning = false;
     this.spinDuration = 3000;
     this.containerWheel = null;
-    this.textWheel = [];
     this.colors = new Colors();
   }
 
+  create() {
+    this.createWheel();
+    this.createButtonOnWheel();
+    this.createArrowForWheel();
+  }
+
   createWheel() {
+    let textWheel = [];
     const radius = 200;
     const graphicsForWheel = this.scene.add.graphics();
 
@@ -19,12 +25,7 @@ export default class Wheel {
       const endAngle = ((i + 1) / this.scene.sectors) * Phaser.Math.PI2;
       const color = this.scene.valueColorsWheel[i];
 
-      graphicsForWheel.fillStyle(color);
-      graphicsForWheel.beginPath();
-      graphicsForWheel.moveTo(0, 0);
-      graphicsForWheel.arc(0, 0, radius, startAngle, endAngle);
-      graphicsForWheel.closePath();
-      graphicsForWheel.fillPath();
+      graphicsForWheel.fillStyle(color).beginPath().moveTo(0, 0).arc(0, 0, radius, startAngle, endAngle).closePath().fillPath();
 
       const centerX = radius * 0.8 * Math.cos((startAngle + endAngle) / 2);
       const centerY = radius * 0.8 * Math.sin((startAngle + endAngle) / 2);
@@ -37,14 +38,16 @@ export default class Wheel {
         .setOrigin(0.5)
         .setRotation(startAngle + (endAngle - startAngle) / 2);
 
-      this.textWheel.push(text);
+      textWheel.push(text);
     }
 
     graphicsForWheel.lineStyle(8, 0xffffff).strokeCircle(0, 0, radius);
 
-    this.containerWheel = this.scene.add.container(this.scene.x / 2, 250);
-    this.containerWheel.add(graphicsForWheel);
-    this.containerWheel.add(this.textWheel);
+    this.containerWheel = this.scene.add
+      .container(this.scene.x / 2, 250)
+      .add(graphicsForWheel)
+      .add(textWheel)
+      .setRotation(80);
   }
 
   createButtonOnWheel() {
@@ -83,39 +86,38 @@ export default class Wheel {
   }
 
   spin() {
-    if (!this.scene.state.valueChip.length) {
-      this.scene.notifications.infoNotification('Place your chip!');
-      return;
-    }
+    if (this.checkBeforeSpin()) {
+      this.scene.stats.balance -= this.scene.stats.generalBetSum;
+      this.scene.stats.create();
+      this.scene.setValueWheel();
+      this.onSetDefaultTextButton();
+      this.targetAngle = this.currentAngleRotate(this.scene.state.valueWheel.value);
 
-    this.scene.setValueWheel();
-    this.onSetDefaultTextButton();
-    this.targetAngle = this.currentAngleRotate(this.scene.state.valueWheel.value);
-
-    if (!this.isSpinning) {
-      this.isSpinning = true;
-
-      this.scene.tweens.add({
-        targets: this.containerWheel,
-        angle: this.targetAngle,
-        duration: this.spinDuration,
-        ease: 'Cubic.easeOut',
-        onComplete: () => {
-          this.isSpinning = false;
-          this.buttonOnWheelText.setText(this.scene.state.valueWheel.value);
-          this.buttonOnWheel.fillColor = this.scene.state.valueWheel.colorHex;
-          this.scene.pay();
-          this.scene.autoStart.startAutoSpinInterval();
-          if (!this.scene.state.autoStart) {
-            this.scene.chipZone.chipArray.forEach(obj => {
-              if (obj.value) {
-                obj.value = 0;
-                obj.valueText.setText('');
-              }
-            });
-          }
-        },
-      });
+      if (!this.isSpinning) {
+        this.isSpinning = true;
+        this.scene.tweens.add({
+          targets: this.containerWheel,
+          angle: this.targetAngle,
+          duration: this.spinDuration,
+          ease: 'Cubic.easeOut',
+          onComplete: () => {
+            this.isSpinning = false;
+            this.buttonOnWheelText.setText(this.scene.state.valueWheel.value);
+            this.buttonOnWheel.fillColor = this.scene.state.valueWheel.colorHex;
+            this.scene.pay();
+            this.scene.autoStart.startAutoSpinInterval();
+            if (!this.scene.state.autoStart) {
+              this.scene.state.valueChip = [];
+              this.scene.chipZone.chipArray.forEach(obj => {
+                if (obj.value) {
+                  obj.value = 0;
+                  obj.valueText.setText('');
+                }
+              });
+            }
+          },
+        });
+      }
     }
   }
 
@@ -133,5 +135,14 @@ export default class Wheel {
         return 360 + startAngle - currAngle * i;
       }
     }
+  }
+
+  checkBeforeSpin() {
+    if (!this.scene.state.valueChip.length) {
+      this.scene.notifications.infoNotification('Place your chip!');
+      return;
+    }
+
+    return true;
   }
 }
