@@ -2,7 +2,7 @@ import Colors from './Colors';
 
 export default class Wheel {
   constructor(scene) {
-    this.scene = scene;
+    this.scene = scene;//TODO scene здесь нужна, чтобы создавать объекты, а не брать какую то инфу из scene. Например (this.scene.sectors), можно только (this.scene.add)
     this.isSpinning = false;
     this.spinDuration = 3000;
     this.containerWheel = null;
@@ -17,14 +17,15 @@ export default class Wheel {
   }
 
   createWheel() {
-    let textWheel = [];
+    let textWheel = []; //TODO  бессмысленно делать здесь массив, если в дальнейшем ты не собираешься его использоват
+                        // а если собираешься, то не сможешь, т.к. этот массив будет находится только в этой области кода
     const radius = 200;
     const graphicsForWheel = this.scene.add.graphics();
 
-    for (let i = 0; i < this.scene.sectors; i += 1) {
+    for (let i = 0; i < this.scene.sectors; i += 1) {//TODO он должен получить массив с секторами извне
       const startAngle = (i / this.scene.sectors) * Phaser.Math.PI2;
       const endAngle = ((i + 1) / this.scene.sectors) * Phaser.Math.PI2;
-      const color = this.scene.valueColorsWheel[i];
+      const color = this.scene.valueColorsWheel[i]; //TODO он должен получить массив с значениями и цветами извне, через передаваемое значение в конструкторе и присваивать его себе
 
       graphicsForWheel.fillStyle(color).beginPath().moveTo(0, 0).arc(0, 0, radius, startAngle, endAngle).closePath().fillPath();
 
@@ -86,13 +87,13 @@ export default class Wheel {
       .strokeTriangleShape(triangle);
   }
 
-  spin() {
-    if (this.checkBeforeSpin()) {
-      this.scene.stats.setBalanceValue((this.scene.stats.balance -= this.scene.stats.totalBet));
-      this.scene.setValueWheel();
-      this.scene.onSetTextButton(this.scene.defaultTextButton, this.scene.defaultColorButton);
+  spin() { //TODO спин должен работать только со своими свойствами, вынеси всё что с ним не связано в главный класс, и используй спин оттуда
+    if (this.checkBeforeSpin()) {//TODO
+      this.scene.stats.setBalanceValue((this.scene.stats.balance -= this.scene.stats.totalBet));//TODO
+      this.scene.setValueWheel();//TODO
+      this.scene.onSetTextButton(this.scene.defaultTextButton, this.scene.defaultColorButton);//TODO
 
-      let targetAngle = this.currentAngleRotate(this.scene.state.valueWheel.value);
+      let targetAngle = this.currentAngleRotate(this.scene.state.valueWheel.value); //TODO
 
       if (!this.isSpinning) {
         this.isSpinning = true;
@@ -103,12 +104,12 @@ export default class Wheel {
           ease: 'Cubic.easeOut',
           onComplete: () => {
             this.isSpinning = false;
-            this.scene.onSetTextButton(this.scene.state.valueWheel.value, this.scene.state.valueWheel.colorHex);
-            this.scene.pay();
-            this.scene.autoStart.startAutoSpinInterval();
-            if (!this.scene.state.autoStart) {
-              this.scene.state.valueChip = [];
-              this.scene.chipZone.deleteValue();
+            this.scene.onSetTextButton(this.scene.state.valueWheel.value, this.scene.state.valueWheel.colorHex);//TODO
+            this.scene.pay();//TODO
+            this.scene.autoStart.startAutoSpinInterval();//TODO
+            if (!this.scene.state.autoStart) {//TODO
+              this.scene.state.valueChip = [];//TODO
+              this.scene.chipZone.deleteValue();//TODO
             }
           },
         });

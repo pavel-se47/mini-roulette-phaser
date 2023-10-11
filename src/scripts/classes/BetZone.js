@@ -19,7 +19,7 @@ export default class BetZone {
       let x = this.scene.x / 2 - 400;
       let y = 650 + i * 80;
 
-      let bet = this.scene.add.circle(0, 0, 36, this.scene.valueColorsBet[i]);
+      let bet = this.scene.add.circle(0, 0, 36, this.scene.valueColorsBet[i]);//TODO обращение к одной и той же переменной. Сделать через локальную
 
       let text = this.scene.add
         .text(0, 0, this.scene.valueNumberBet[i], {

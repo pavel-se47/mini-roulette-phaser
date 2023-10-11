@@ -1,7 +1,7 @@
 import limits from '../../limits.json';
 
-export default class Rules {
-  constructor(scene) {
+export default class Rules {//TODO сделай правила через контейнер, и создавай один раз за вход в игру. Если игроку понадобится узнать правила, сделай их видимыми через контейнер. свойство visible
+  constructor(scene) {//TODO присвой все тексты этому классу, они сейчас жрут память
     this.scene = scene;
     this.containerRules = null;
     this.create();

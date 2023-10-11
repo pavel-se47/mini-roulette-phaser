@@ -72,16 +72,16 @@ export default class ChipZone {
         color: this.colors.currentColor(value),
         currentBet: this.scene.stats.currentBet,
       },
-    ];
+    ];//TODO почему не сделать обычный push?
 
     if (this.scene.stats.generalBetSum + this.scene.stats.currentBet > this.scene.stats.balance) {
       this.scene.notifications.alertNotification('Not enough funds to bet!');
       return;
     }
-    this.scene.stats.setTotalBetValue((this.scene.stats.totalBet += this.scene.stats.currentBet));
+    this.scene.stats.setTotalBetValue((this.scene.stats.totalBet += this.scene.stats.currentBet)); //TODO странное написание, лучше сделать через локальные переменные
     this.scene.state.valueWheel = null;
     this.scene.betZone.calculateGeneralBetSum();
-    this.scene.onSetTextButton(this.scene.defaultTextButton, this.scene.defaultColorButton);
+    this.scene.onSetTextButton(this.scene.defaultTextButton, this.scene.defaultColorButton); //TODO при отсутствии передаваемых значений, должны устанавливаться дефолтные, при их наличии
     return true;
   }
 
