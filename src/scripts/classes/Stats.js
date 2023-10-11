@@ -2,13 +2,14 @@ export default class Stats {
   #balance;
   #currentBet;
   #currentWin;
-  #generalBetSum;
+  #totalBet;
   constructor(scene) {
     this.scene = scene;
     this.#balance = 1000;
     this.#currentBet = 10;
     this.#currentWin = 0;
-    this.#generalBetSum = 0;
+    this.#totalBet = 0;
+    this.create();
   }
 
   create() {
@@ -39,36 +40,36 @@ export default class Stats {
     this.#currentWin = newCurrentWin;
   }
 
-  get generalBetSum() {
-    return this.#generalBetSum;
+  get totalBet() {
+    return this.#totalBet;
   }
 
-  set generalBetSum(newGeneralBetSum) {
-    this.#generalBetSum = newGeneralBetSum;
+  set totalBet(newTotalBet) {
+    this.#totalBet = newTotalBet;
   }
 
   createStats() {
     const statsRectangle = this.scene.add.rectangle(this.scene.x / 2, 510, 875, 80, 0xffffff);
 
-    const balanceText = this.scene.add.text(this.scene.x / 2 - 400, this.scene.y / 2 - 50, 'Your balance \n' + this.balance, {
+    this.balanceText = this.scene.add.text(this.scene.x / 2 - 400, this.scene.y / 2 - 50, 'Your balance \n' + this.balance, {
       font: 'bold 20px Arial',
       fill: 'black',
       align: 'center',
     });
 
-    const currentBetText = this.scene.add.text(this.scene.x / 2 - 200, this.scene.y / 2 - 50, 'Your selected bet \n' + this.currentBet, {
+    this.currentBetText = this.scene.add.text(this.scene.x / 2 - 200, this.scene.y / 2 - 50, 'Your selected bet \n' + this.currentBet, {
       font: 'bold 20px Arial',
       fill: 'black',
       align: 'center',
     });
 
-    const totalBetText = this.scene.add.text(this.scene.x / 2 + 40, this.scene.y / 2 - 50, 'Your total bet \n' + this.generalBetSum, {
+    this.totalBetText = this.scene.add.text(this.scene.x / 2 + 40, this.scene.y / 2 - 50, 'Your total bet \n' + this.totalBet, {
       font: 'bold 20px Arial',
       fill: 'black',
       align: 'center',
     });
 
-    const currentWinText = this.scene.add.text(this.scene.x / 2 + 240, this.scene.y / 2 - 50, 'Your current win \n' + this.currentWin, {
+    this.currentWinText = this.scene.add.text(this.scene.x / 2 + 240, this.scene.y / 2 - 50, 'Your current win \n' + this.currentWin, {
       font: 'bold 20px Arial',
       fill: 'black',
       align: 'center',

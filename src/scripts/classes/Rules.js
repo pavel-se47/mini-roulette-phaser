@@ -4,6 +4,7 @@ export default class Rules {
   constructor(scene) {
     this.scene = scene;
     this.containerRules = null;
+    this.create();
   }
 
   create() {

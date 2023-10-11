@@ -27,7 +27,6 @@ export default class GameScene extends Phaser.Scene {
       valueChip: [],
       autoStart: false,
       timer: 10,
-      checkBet: false,
     };
   }
 
@@ -42,25 +41,13 @@ export default class GameScene extends Phaser.Scene {
     this.createGameFiled(this.sectors, this.valueNumbersWheel, this.valueColors);
 
     this.notifications = new Notifications(this);
-    this.analytics = new Analyt(this);
-
-    this.wheel = new Wheel(this);
-    this.wheel.create();
-
-    this.stats = new Stats(this);
-    this.stats.create();
-
-    this.betZone = new BetZone(this);
-    this.betZone.create();
-
-    this.chipZone = new ChipZone(this);
-    this.chipZone.create();
-
     this.autoStart = new AutoStart(this);
-    this.autoStart.create();
-
+    this.chipZone = new ChipZone(this);
+    this.betZone = new BetZone(this);
+    this.analytics = new Analyt(this);
+    this.wheel = new Wheel(this);
+    this.stats = new Stats(this);
     this.rules = new Rules(this);
-    this.rules.create();
   }
 
   checkSectors() {

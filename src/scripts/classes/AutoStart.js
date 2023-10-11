@@ -5,6 +5,7 @@ export default class AutoStart {
     this.autoStartTime = 10;
     this.containerStartAutoStart = null;
     this.containerStopAutoStart = null;
+    this.create();
   }
 
   create() {

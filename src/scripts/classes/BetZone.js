@@ -1,6 +1,7 @@
 export default class BetZone {
   constructor(scene) {
     this.scene = scene;
+    this.create();
   }
 
   create() {
@@ -34,8 +35,8 @@ export default class BetZone {
         .on(
           'pointerdown',
           () => {
-            this.scene.stats.currentBet = parseInt(text.text);
-            this.scene.stats.create();
+            this.scene.stats.currentBet = this.scene.valueNumberBet[i];
+            this.scene.stats.currentBetText.setText('Your selected bet \n' + this.scene.stats.currentBet);
           },
           this.scene
         );
@@ -45,6 +46,6 @@ export default class BetZone {
   calculateGeneralBetSum() {
     const currBet = this.scene.state.valueChip.map(object => object.currentBet);
     const genBet = currBet.reduce((acc, number) => acc + number, 0);
-    this.scene.stats.generalBetSum = genBet;
+    this.scene.stats.totalBet = genBet;
   }
 }

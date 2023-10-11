@@ -7,6 +7,7 @@ export default class Wheel {
     this.spinDuration = 3000;
     this.containerWheel = null;
     this.colors = new Colors();
+    this.create();
   }
 
   create() {
@@ -87,8 +88,8 @@ export default class Wheel {
 
   spin() {
     if (this.checkBeforeSpin()) {
-      this.scene.stats.balance -= this.scene.stats.generalBetSum;
-      this.scene.stats.create();
+      this.scene.stats.balance -= this.scene.stats.totalBet;
+      this.scene.stats.balanceText.setText('Your balance \n' + this.scene.stats.balance);
       this.scene.setValueWheel();
       this.onSetDefaultTextButton();
       this.targetAngle = this.currentAngleRotate(this.scene.state.valueWheel.value);

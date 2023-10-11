@@ -47,17 +47,20 @@ export default class Analyt {
           (valueCh === valuePt && valueCh === valueWh) ||
           (valueCh === valuePt && valueCh !== valueWh && colorCh === colorWh && typeof valueCh === 'string')
         ) {
-          (this.scene.stats.balance += bet * valuePtCoef), (this.scene.stats.currentWin = bet * valuePtCoef), this.scene.stats.create();
+          (this.scene.stats.balance += bet * valuePtCoef), (this.scene.stats.currentWin = bet * valuePtCoef);
+          this.scene.stats.balanceText.setText('Your balance \n' + this.scene.stats.balance);
+          this.scene.stats.currentWinText.setText('Your current win \n' + this.scene.stats.currentWin);
           this.notifications.successNotification(object, valuePtCoef);
         }
       }
 
       if ((valueCh !== valueWh && typeof valueCh === 'number') || colorCh !== colorWh) {
         if (!this.scene.state.autoStart) {
-          this.scene.stats.generalBetSum = 0;
+          this.scene.stats.totalBet = 0;
+          this.scene.stats.totalBetText.setText('Your total bet \n' + this.scene.stats.totalBet);
         }
         this.scene.stats.currentWin = 0;
-        this.scene.stats.create();
+        this.scene.stats.currentWinText.setText('Your current win \n' + this.scene.stats.currentWin);
         this.notifications.errorNotification(object);
       }
     });
@@ -66,10 +69,11 @@ export default class Analyt {
       if (this.scene.stats.balance === 0 && this.scene.stats.balance < this.scene.stats.currentBet) {
         this.notifications.alertNotification('Top up your balance to continue playing!')((this.scene.state.autoStart = false)),
           (this.scene.stats.balance = 0),
-          (this.scene.stats.currentBet = 0),
-          (this.scene.stats.generalBetSum = 0);
+          this.scene.stats.balanceText.setText('Your balance \n' + this.scene.stats.balance);
+        (this.scene.stats.currentBet = 0), this.scene.stats.currentBetText.setText('Your current bet \n' + this.scene.stats.currentBet);
+        this.scene.stats.totalBet = 0;
+        this.scene.stats.totalBetText.setText('Your total bet \n' + this.scene.stats.totalBet);
         this.scene.state.valueChip = [];
-        this.scene.stats.create();
       }
     }
   }
