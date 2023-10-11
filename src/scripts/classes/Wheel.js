@@ -88,43 +88,32 @@ export default class Wheel {
 
   spin() {
     if (this.checkBeforeSpin()) {
-      this.scene.stats.balance -= this.scene.stats.totalBet;
-      this.scene.stats.balanceText.setText('Your balance \n' + this.scene.stats.balance);
+      this.scene.stats.setBalanceValue((this.scene.stats.balance -= this.scene.stats.totalBet));
       this.scene.setValueWheel();
-      this.onSetDefaultTextButton();
-      this.targetAngle = this.currentAngleRotate(this.scene.state.valueWheel.value);
+      this.scene.onSetTextButton(this.scene.defaultTextButton, this.scene.defaultColorButton);
+
+      let targetAngle = this.currentAngleRotate(this.scene.state.valueWheel.value);
 
       if (!this.isSpinning) {
         this.isSpinning = true;
         this.scene.tweens.add({
           targets: this.containerWheel,
-          angle: this.targetAngle,
+          angle: targetAngle,
           duration: this.spinDuration,
           ease: 'Cubic.easeOut',
           onComplete: () => {
             this.isSpinning = false;
-            this.buttonOnWheelText.setText(this.scene.state.valueWheel.value);
-            this.buttonOnWheel.fillColor = this.scene.state.valueWheel.colorHex;
+            this.scene.onSetTextButton(this.scene.state.valueWheel.value, this.scene.state.valueWheel.colorHex);
             this.scene.pay();
             this.scene.autoStart.startAutoSpinInterval();
             if (!this.scene.state.autoStart) {
               this.scene.state.valueChip = [];
-              this.scene.chipZone.chipArray.forEach(obj => {
-                if (obj.value) {
-                  obj.value = 0;
-                  obj.valueText.setText('');
-                }
-              });
+              this.scene.chipZone.deleteValue();
             }
           },
         });
       }
     }
-  }
-
-  onSetDefaultTextButton() {
-    this.buttonOnWheelText.setText('SPIN');
-    this.buttonOnWheel.fillColor = '0xffa500';
   }
 
   currentAngleRotate(number) {
@@ -143,7 +132,6 @@ export default class Wheel {
       this.scene.notifications.infoNotification('Place your chip!');
       return;
     }
-
     return true;
   }
 }

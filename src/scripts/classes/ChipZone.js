@@ -78,19 +78,15 @@ export default class ChipZone {
       this.scene.notifications.alertNotification('Not enough funds to bet!');
       return;
     }
-
-    this.scene.stats.totalBet += this.scene.stats.currentBet;
-    this.scene.stats.totalBetText.setText('Your total bet \n' + this.scene.stats.totalBet);
+    this.scene.stats.setTotalBetValue((this.scene.stats.totalBet += this.scene.stats.currentBet));
     this.scene.state.valueWheel = null;
     this.scene.betZone.calculateGeneralBetSum();
-    this.onSetDefaultTextButton();
-
+    this.scene.onSetTextButton(this.scene.defaultTextButton, this.scene.defaultColorButton);
     return true;
   }
 
   createButtonClearChipZone() {
     const clearChipZoneRectangle = this.scene.add.rectangle(0, 0, 180, 80, 0xffffff);
-
     const clearChipZoneText = this.scene.add
       .text(0, 0, 'Clear chip zone', {
         font: 'bold 20px Arial',
@@ -106,30 +102,30 @@ export default class ChipZone {
       .on(
         'pointerdown',
         () => {
-          if (!this.scene.wheel.isSpinning) {
-            this.scene.state.valueChip = [];
-            this.scene.state.valueWheel = null;
-            this.scene.stats.totalBet = 0;
-            this.scene.stats.totalBetText.setText('Your total bet \n' + this.scene.stats.totalBet);
-            this.scene.stats.currentBet = 10;
-            this.scene.stats.currentBetText.setText('Your selected bet \n' + this.scene.stats.currentBet);
-            this.scene.stats.currentWin = 0;
-            this.scene.stats.currentWinText.setText('Your current win \n' + this.scene.stats.currentWin);
-            this.chipArray.forEach(obj => {
-              if (obj.value) {
-                obj.value = 0;
-                obj.valueText.setText('');
-              }
-            });
-            this.onSetDefaultTextButton();
-          }
+          this.setValue();
         },
         this.scene
       );
   }
 
-  onSetDefaultTextButton() {
-    this.scene.wheel.buttonOnWheelText.setText('SPIN');
-    this.scene.wheel.buttonOnWheel.fillColor = '0xffa500';
+  setValue() {
+    if (!this.scene.wheel.isSpinning) {
+      this.scene.state.valueChip = [];
+      this.scene.state.valueWheel = null;
+      this.scene.stats.setTotalBetValue(0);
+      this.scene.stats.setCurrentBetValue(10);
+      this.scene.stats.setCurrentWinValue(0);
+      this.deleteValue();
+      this.scene.onSetTextButton(this.scene.defaultTextButton, this.scene.defaultColorButton);
+    }
+  }
+
+  deleteValue() {
+    this.chipArray.forEach(obj => {
+      if (obj.value) {
+        obj.value = 0;
+        obj.valueText.setText('');
+      }
+    });
   }
 }

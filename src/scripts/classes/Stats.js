@@ -75,4 +75,24 @@ export default class Stats {
       align: 'center',
     });
   }
+
+  setBalanceValue(value) {
+    this.balance = value;
+    this.balanceText.setText('Your balance \n' + this.balance);
+  }
+
+  setCurrentBetValue(value) {
+    this.currentBet = value;
+    this.currentBetText.setText('Your selected bet \n' + this.currentBet);
+  }
+
+  setTotalBetValue(value) {
+    this.totalBet = value;
+    this.totalBetText.setText('Your total bet \n' + this.totalBet);
+  }
+
+  setCurrentWinValue(value) {
+    this.currentWin = value;
+    this.currentWinText.setText('Your current win \n' + this.currentWin);
+  }
 }

@@ -22,6 +22,9 @@ export default class GameScene extends Phaser.Scene {
     this.valueNumbersWheelCopy = [];
     this.valueColorsWheel = [];
     this.valueColorsWheelCopy = [];
+    this.defaultTextButton = 'SPIN';
+    this.defaultColorButton = '0xffa500';
+
     this.state = {
       valueWheel: null,
       valueChip: [],
@@ -40,7 +43,7 @@ export default class GameScene extends Phaser.Scene {
     this.y = this.sys.game.config.height;
     this.createGameFiled(this.sectors, this.valueNumbersWheel, this.valueColors);
 
-    this.notifications = new Notifications(this);
+    this.notifications = new Notifications();
     this.autoStart = new AutoStart(this);
     this.chipZone = new ChipZone(this);
     this.betZone = new BetZone(this);
@@ -91,7 +94,6 @@ export default class GameScene extends Phaser.Scene {
         case this.blackValue.includes(arrNum[i]):
           this.valueColorsWheel.push(arrColor[1]);
           break;
-
         default:
           break;
       }
@@ -134,7 +136,6 @@ export default class GameScene extends Phaser.Scene {
         return;
       }
     }
-
     return true;
   }
 
@@ -144,5 +145,10 @@ export default class GameScene extends Phaser.Scene {
 
   pay() {
     this.analytics.valueWheelCheck();
+  }
+
+  onSetTextButton(text, color) {
+    this.wheel.buttonOnWheelText.setText(text);
+    this.wheel.buttonOnWheel.fillColor = color;
   }
 }
