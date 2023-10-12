@@ -63,25 +63,28 @@ export default class ChipZone {
     if (!this.scene.checkBet(chip)) {
       return false;
     }
+    if (this.scene.wheel.isSpinning) {
+      return;
+    }
     let value = chip.number;
+    let currentBet = this.scene.stats.currentBet;
+    let totalBet = this.scene.stats.totalBet;
+    let balance = this.scene.stats.balance;
 
-    this.scene.state.valueChip = [
-      ...this.scene.state.valueChip,
-      {
-        value: value,
-        color: this.colors.currentColor(value),
-        currentBet: this.scene.stats.currentBet,
-      },
-    ];//TODO почему не сделать обычный push?
+    this.scene.state.valueChip.push({
+      value: value,
+      color: this.colors.currentColor(value),
+      currentBet: this.scene.stats.currentBet,
+    });
 
-    if (this.scene.stats.generalBetSum + this.scene.stats.currentBet > this.scene.stats.balance) {
+    if (totalBet + currentBet > balance) {
       this.scene.notifications.alertNotification('Not enough funds to bet!');
       return;
     }
-    this.scene.stats.setTotalBetValue((this.scene.stats.totalBet += this.scene.stats.currentBet)); //TODO странное написание, лучше сделать через локальные переменные
     this.scene.state.valueWheel = null;
-    this.scene.betZone.calculateGeneralBetSum();
-    this.scene.onSetTextButton(this.scene.defaultTextButton, this.scene.defaultColorButton); //TODO при отсутствии передаваемых значений, должны устанавливаться дефолтные, при их наличии
+    this.scene.stats.setTotalBetValue((totalBet += currentBet));
+    this.scene.betZone.calculateTotalBet();
+    this.scene.onSetTextButton(this.scene.defaultTextButton, this.scene.defaultColorButton);
     return true;
   }
 

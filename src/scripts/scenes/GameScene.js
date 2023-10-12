@@ -48,9 +48,9 @@ export default class GameScene extends Phaser.Scene {
     this.chipZone = new ChipZone(this);
     this.betZone = new BetZone(this);
     this.analytics = new Analyt(this);
-    this.wheel = new Wheel(this);
+    this.wheel = new Wheel(this, this.sectors, this.valueNumbersWheel, this.valueColorsWheel);
     this.stats = new Stats(this);
-    this.rules = new Rules(this);
+    this.rules = this.add.container(1494, 315, new Rules(this));
   }
 
   checkSectors() {
@@ -135,6 +135,33 @@ export default class GameScene extends Phaser.Scene {
         this.notifications.alertNotification('You have exceeded the current limit for numbers!');
         return;
       }
+    }
+    return true;
+  }
+
+  spin() {
+    if (this.checkBeforeSpin()) {
+      this.stats.setBalanceValue((this.stats.balance -= this.stats.totalBet));
+      this.setValueWheel();
+      this.onSetTextButton(this.defaultTextButton, this.defaultColorButton);
+
+      this.wheel.rotation();
+      this.wheel.tweens.on('complete', () => {
+        this.onSetTextButton(this.state.valueWheel.value, this.state.valueWheel.colorHex);
+        this.pay();
+        this.autoStart.startAutoSpinInterval();
+        if (!this.state.autoStart) {
+          this.state.valueChip = [];
+          this.chipZone.deleteValue();
+        }
+      });
+    }
+  }
+
+  checkBeforeSpin() {
+    if (!this.state.valueChip.length) {
+      this.notifications.infoNotification('Place your chip!');
+      return;
     }
     return true;
   }

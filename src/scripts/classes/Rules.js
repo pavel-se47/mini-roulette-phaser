@@ -1,14 +1,15 @@
 import limits from '../../limits.json';
 
-export default class Rules {//TODO сделай правила через контейнер, и создавай один раз за вход в игру. Если игроку понадобится узнать правила, сделай их видимыми через контейнер. свойство visible
-  constructor(scene) {//TODO присвой все тексты этому классу, они сейчас жрут память
+export default class Rules extends Phaser.GameObjects.Container {
+  constructor(scene) {
+    super(scene);
     this.scene = scene;
-    this.containerRules = null;
     this.create();
   }
 
   create() {
     this.createButtonRulesAndLimits();
+    this.createRulesAndLimits();
   }
 
   createButtonRulesAndLimits() {
@@ -20,15 +21,17 @@ export default class Rules {//TODO сделай правила через кон
       align: 'center',
     });
 
-    buttonRules.on('pointerdown', this.createRulesAndLimits, this.scene);
+    buttonRules.on('pointerdown', () => {
+      this.toggleRulesAndLimits();
+    });
   }
 
   createRulesAndLimits() {
-    const statsRectangle = this.add.rectangle(1494, 315, 650, 270, 0xffffff);
+    const statsRectangle = this.scene.add.rectangle(0, 0, 650, 270, 0xffffff);
 
-    const rulesText = this.add.text(
-      this.x / 2 + 220,
-      this.y / 2 - 350,
+    const rulesText = this.scene.add.text(
+      -315,
+      -130,
       'Правила игры.\n\nВыберите фишку в поле "Your Bet", которую хотите поставить.\nСделайте ставку в "Chip Zone".\nНажмите кнопку "SPIN" или "Start Auto Spin".\nКолесо начнет крутится и укажет на выигрышный сектор.\nНомер и цвет выпавшего сектора отобразится в центре круга \nдо следующей Вашей ставки.',
       {
         font: 'bold 20px Arial',
@@ -37,34 +40,34 @@ export default class Rules {//TODO сделай правила через кон
       }
     );
 
-    const limitsNumbersText = this.add.text(this.x / 2 + 270, this.y / 2 - 150, `Limits 'AR' and 'AB' bet \nmax ${limits.colors} credits`, {
+    const limitsNumbersText = this.scene.add.text(-270, 80, `Limits 'AR' and 'AB' bet \nmax ${limits.colors} credits`, {
       font: 'bold 20px Arial',
       fill: 'black',
       align: 'center',
     });
 
-    const limitsColorsText = this.add.text(this.x / 2 + 600, this.y / 2 - 150, `Limits numbers bet \nmax ${limits.numbers} credits`, {
+    const limitsColorsText = this.scene.add.text(80, 80, `Limits numbers bet \nmax ${limits.numbers} credits`, {
       font: 'bold 20px Arial',
       fill: 'black',
       align: 'center',
     });
 
-    const closeText = this.add
-      .text(this.x / 2 + 830, this.y / 2 - 350, 'X', {
+    const closeText = this.scene.add
+      .text(300, -130, 'X', {
         font: 'bold 20px Arial',
         fill: 'black',
         align: 'center',
       })
       .setInteractive();
 
-    this.containerRules = this.add.container(0, 0, [statsRectangle, rulesText, limitsNumbersText, limitsColorsText, closeText]);
+    this.add([statsRectangle, rulesText, limitsNumbersText, limitsColorsText, closeText]).setVisible(!this.visible);
 
-    closeText.on(
-      'pointerdown',
-      () => {
-        this.containerRules.destroy();
-      },
-      this
-    );
+    closeText.on('pointerdown', () => {
+      this.toggleRulesAndLimits();
+    });
+  }
+
+  toggleRulesAndLimits() {
+    this.setVisible(!this.visible);
   }
 }

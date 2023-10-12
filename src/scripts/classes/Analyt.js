@@ -34,31 +34,48 @@ export default class Analyt {
   valueWheelCheck() {
     let valueWh = this.scene.state.valueWheel?.value;
     let colorWh = this.scene.state.valueWheel?.color;
+    let allBets = this.scene.state.valueChip;
+    let possibleCombs = [];
 
-    this.scene.state.valueChip.forEach(object => {
-      let valueCh = object?.value;
-      let colorCh = object?.color;
-      let bet = object?.currentBet;
+    for (let j = 0; j < payTable.length; j += 1) {
+      let colorPt = payTable[j].color;
+      let valuePt = payTable[j].value;
 
-      for (let i = 0; i < payTable.length; i += 1) {//TODO от значения, полученное от барабана, составить список возможных комбинаций и проверять со ставками этот список на совпадение
-        let valuePt = payTable[i].value;
-        let valuePtCoef = payTable[i].coef;
-        if (
-          (valueCh === valuePt && valueCh === valueWh) ||
-          (valueCh === valuePt && valueCh !== valueWh && colorCh === colorWh && typeof valueCh === 'string')//TODO из-за пункта выше, условие изменится, так же сделай условие короче
-        ) {
-          this.scene.stats.setBalanceValue((this.scene.stats.balance += bet * valuePtCoef)); //TODO так же повторение одной и той же переменной
-          this.scene.stats.setCurrentWinValue((this.scene.stats.currentWin = bet * valuePtCoef));
-          this.notifications.successNotification(object, valuePtCoef);
+      if (valueWh === valuePt) {
+        possibleCombs.push(payTable[j]);
+        if (colorPt === 'red') {
+          possibleCombs.push(payTable.find(obj => obj.value === 'AR'));
+        } else if (colorPt === 'black') {
+          possibleCombs.push(payTable.find(obj => obj.value === 'AB'));
         }
       }
+    }
 
-      if ((valueCh !== valueWh && typeof valueCh === 'number') || colorCh !== colorWh) {
+    allBets.forEach(objectVc => {
+      let valueCh = objectVc?.value;
+      let colorCh = objectVc?.color;
+      let bet = objectVc?.currentBet;
+
+      for (let i = 0; i < possibleCombs.length; i += 1) {
+        let balance = this.scene.stats.balance;
+        let currentWin = this.scene.stats.currentWin;
+        let valuePc = possibleCombs[i].value;
+        let colorPc = possibleCombs[i].color;
+        let valuePcCoef = possibleCombs[i].coef;
+        let winValue = bet * valuePcCoef;
+
+        if (valueCh === valuePc) {
+          this.scene.stats.setBalanceValue((balance += winValue));
+          this.scene.stats.setCurrentWinValue((currentWin = winValue));
+          this.notifications.successNotification(objectVc, valuePcCoef);
+        }
+      }
+      if ((valueCh !== valueWh && colorCh !== colorWh) || (valueCh !== valueWh && colorCh === colorWh && typeof valueCh !== 'string')) {
         if (!this.scene.state.autoStart) {
           this.scene.stats.setTotalBetValue(0);
         }
         this.scene.stats.setCurrentWinValue(0);
-        this.notifications.errorNotification(object);
+        this.notifications.errorNotification(objectVc);
       }
     });
 

@@ -18,11 +18,13 @@ export default class BetZone {
     for (let i = 0; i < this.scene.valueNumberBet.length; i += 1) {
       let x = this.scene.x / 2 - 400;
       let y = 650 + i * 80;
+      let betColor = this.scene.valueColorsBet[i];
+      let betNumber = this.scene.valueNumberBet[i];
 
-      let bet = this.scene.add.circle(0, 0, 36, this.scene.valueColorsBet[i]);//TODO обращение к одной и той же переменной. Сделать через локальную
+      let bet = this.scene.add.circle(0, 0, 36, betColor);
 
       let text = this.scene.add
-        .text(0, 0, this.scene.valueNumberBet[i], {
+        .text(0, 0, betNumber, {
           font: 'bold 24px Arial',
           fill: 'white',
         })
@@ -35,16 +37,16 @@ export default class BetZone {
         .on(
           'pointerdown',
           () => {
-            this.scene.stats.setCurrentBetValue(this.scene.valueNumberBet[i]);
+            this.scene.stats.setCurrentBetValue(betNumber);
           },
           this.scene
         );
     }
   }
 
-  calculateGeneralBetSum() {
+  calculateTotalBet() {
     const currBet = this.scene.state.valueChip.map(object => object.currentBet);
-    const genBet = currBet.reduce((acc, number) => acc + number, 0);
-    this.scene.stats.totalBet = genBet;
+    const totalBet = currBet.reduce((acc, number) => acc + number, 0);
+    this.scene.stats.totalBet = totalBet;
   }
 }
