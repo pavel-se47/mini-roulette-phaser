@@ -8,10 +8,13 @@ import Notifications from '../classes/Notifications';
 import Analyt from '../classes/Analyt';
 import limits from '../../limits.json';
 
+// сделать динамику для пользователя на выбор секторов
+// сделать игру в кости
+
 export default class GameScene extends Phaser.Scene {
   constructor() {
     super('GameScene');
-    this.sectors = 33;
+    this.sectors = 5;
     this.valueNumberBet = [10, 20, 50, 100, 150];
     this.valueColorsBet = [0xf5deb3, 0xadff2f, 0x0000ff, 0xff00ff, 0xffa500];
     this.greenValue = [0];
@@ -167,11 +170,12 @@ export default class GameScene extends Phaser.Scene {
   }
 
   setValueWheel() {
-    this.state.valueWheel = this.analytics.getValue();
+    this.state.valueWheel = this.analytics.getValue(this.sectors);
+    console.log(this.state.valueWheel);
   }
 
   pay() {
-    this.analytics.valueWheelCheck();
+    this.analytics.valueWheelCheck(this.state.valueWheel, this.state.valueChip);
   }
 
   onSetTextButton(text, color) {

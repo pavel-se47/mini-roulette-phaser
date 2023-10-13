@@ -37,7 +37,7 @@ export default class Wheel {
       const centerY = radius * 0.8 * Math.sin((startAngle + endAngle) / 2);
 
       const text = this.scene.add
-        .text(centerX, centerY, this.numbers[i], textStyle.textInWheel)
+        .text(centerX, centerY, this.numbers[i], textStyle.textInSectorWheel)
         .setOrigin(0.5)
         .setRotation(startAngle + (endAngle - startAngle) / 2);
 

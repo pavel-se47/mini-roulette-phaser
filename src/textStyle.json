@@ -52,7 +52,7 @@
     "align": "center"
 },
 
-"textInWheel":{
+"textInSectorWheel":{
     "font": "bold 26px Arial",
     "fill": "white"
 },

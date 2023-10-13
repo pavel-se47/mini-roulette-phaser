@@ -24,8 +24,8 @@ export default class ChipZone {
 
     this.group.add(chipZoneText);
 
-    let countY = 0,
-      countX = 0;
+    let countY = 0;
+    let countX = 0;
 
     for (let i = 0; i < this.scene.sectors + 2; i += 1) {
       const w = 70;
@@ -50,7 +50,7 @@ export default class ChipZone {
           chip.value += this.scene.stats.currentBet;
           chip.valueText.setText(chip.value);
         }
-      }, this.scene);
+      });
 
       countX++;
     }

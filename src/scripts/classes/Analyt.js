@@ -7,34 +7,13 @@ export default class Analyt {
     this.notifications = new Notifications();
   }
 
-  getValue() {
-    const num = Phaser.Utils.Array.GetRandom(this.scene.valueNumbersWheel);
-
-    if (this.scene.greenValue.includes(num)) {
-      return {
-        value: num,
-        color: 'green',
-        colorHex: '0x00cc00',
-      };
-    } else if (this.scene.redValue.includes(num)) {
-      return {
-        value: num,
-        color: 'red',
-        colorHex: '0xff0000',
-      };
-    } else if (this.scene.blackValue.includes(num)) {
-      return {
-        value: num,
-        color: 'black',
-        colorHex: '0x000000',
-      };
-    }
+  getValue(endValue) {
+    return Phaser.Utils.Array.GetRandom(payTable, 2, endValue);
   }
 
-  valueWheelCheck() {
-    let valueWh = this.scene.state.valueWheel?.value;
-    let colorWh = this.scene.state.valueWheel?.color;
-    let allBets = this.scene.state.valueChip;
+  valueWheelCheck(winValue, allBets) {
+    let valueWh = winValue.value;
+    let colorWh = winValue.color;
     let possibleCombs = [];
 
     payTable.forEach(objectPt => {
