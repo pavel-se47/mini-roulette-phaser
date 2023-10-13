@@ -83,39 +83,6 @@ export default class Wheel {
       .strokeTriangleShape(triangle);
   }
 
-  // spin() {
-  //   //TODO спин должен работать только со своими свойствами, вынеси всё что с ним не связано в главный класс, и используй спин оттуда
-  //   if (this.checkBeforeSpin()) {
-  //     //TODO
-  //     this.scene.stats.setBalanceValue((this.scene.stats.balance -= this.scene.stats.totalBet)); //TODO
-  //     this.scene.setValueWheel(); //TODO
-  //     this.scene.onSetTextButton(this.scene.defaultTextButton, this.scene.defaultColorButton); //TODO
-
-  //     let targetAngle = this.currentAngleRotate(this.scene.state.valueWheel.value); //TODO
-
-  //     if (!this.isSpinning) {
-  //       this.isSpinning = true;
-  //       this.scene.tweens.add({
-  //         targets: this.containerWheel,
-  //         angle: targetAngle,
-  //         duration: this.spinDuration,
-  //         ease: 'Cubic.easeOut',
-  //         onComplete: () => {
-  //           this.isSpinning = false;
-  //           this.scene.onSetTextButton(this.scene.state.valueWheel.value, this.scene.state.valueWheel.colorHex); //TODO
-  //           this.scene.pay(); //TODO
-  //           this.scene.autoStart.startAutoSpinInterval(); //TODO
-  //           if (!this.scene.state.autoStart) {
-  //             //TODO
-  //             this.scene.state.valueChip = []; //TODO
-  //             this.scene.chipZone.deleteValue(); //TODO
-  //           }
-  //         },
-  //       });
-  //     }
-  //   }
-  // }
-
   rotation() {
     let targetAngle = this.currentAngleRotate(this.scene.state.valueWheel.value);
     if (!this.isSpinning) {
@@ -142,12 +109,4 @@ export default class Wheel {
       }
     }
   }
-
-  // checkBeforeSpin() {
-  //   if (!this.scene.state.valueChip.length) {
-  //     this.scene.notifications.infoNotification('Place your chip!');
-  //     return;
-  //   }
-  //   return true;
-  // }
 }

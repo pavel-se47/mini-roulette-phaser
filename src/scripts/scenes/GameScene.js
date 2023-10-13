@@ -55,7 +55,7 @@ export default class GameScene extends Phaser.Scene {
 
   checkSectors() {
     if (this.sectors < 3 || this.sectors > 37) {
-      throw new Error('The number of sectors can be set from 3 to 37');
+      throw new Error(alert('The number of sectors can be set from 3 to 37'));
     }
   }
 
@@ -139,11 +139,19 @@ export default class GameScene extends Phaser.Scene {
     return true;
   }
 
+  checkBeforeSpin() {
+    if (!this.state.valueChip.length) {
+      this.notifications.infoNotification('Place your chip!');
+      return;
+    }
+    return true;
+  }
+
   spin() {
     if (this.checkBeforeSpin()) {
       this.stats.setBalanceValue((this.stats.balance -= this.stats.totalBet));
       this.setValueWheel();
-      this.onSetTextButton(this.defaultTextButton, this.defaultColorButton);
+      this.onSetTextButton();
 
       this.wheel.rotation();
       this.wheel.tweens.on('complete', () => {
@@ -152,18 +160,10 @@ export default class GameScene extends Phaser.Scene {
         this.autoStart.startAutoSpinInterval();
         if (!this.state.autoStart) {
           this.state.valueChip = [];
-          this.chipZone.deleteValue();
+          this.deleteValue();
         }
       });
     }
-  }
-
-  checkBeforeSpin() {
-    if (!this.state.valueChip.length) {
-      this.notifications.infoNotification('Place your chip!');
-      return;
-    }
-    return true;
   }
 
   setValueWheel() {
@@ -175,7 +175,38 @@ export default class GameScene extends Phaser.Scene {
   }
 
   onSetTextButton(text, color) {
-    this.wheel.buttonOnWheelText.setText(text);
-    this.wheel.buttonOnWheel.fillColor = color;
+    if (!text) {
+      this.wheel.buttonOnWheelText.setText(this.defaultTextButton);
+    } else {
+      this.wheel.buttonOnWheelText.setText(text);
+    }
+    if (!color) {
+      this.wheel.buttonOnWheel.fillColor = this.defaultColorButton;
+    } else {
+      this.wheel.buttonOnWheel.fillColor = color;
+    }
+  }
+
+  setDefaultValue() {
+    if (!this.wheel.isSpinning) {
+      this.state.valueChip = [];
+      this.state.valueWheel = null;
+      this.state.timer = 10;
+      this.autoStart.spinViaText.setText(`SPIN VIA ${this.state.timer} secs`);
+      this.stats.setTotalBetValue(0);
+      this.stats.setCurrentBetValue(10);
+      this.stats.setCurrentWinValue(0);
+      this.deleteValue();
+      this.onSetTextButton();
+    }
+  }
+
+  deleteValue() {
+    this.chipZone.chipArray.forEach(obj => {
+      if (obj.value) {
+        obj.value = 0;
+        obj.valueText.setText('');
+      }
+    });
   }
 }

@@ -17,10 +17,10 @@ export default class AutoStart {
       if (this.scene.state.autoStart) {
         this.interval = setInterval(() => {
           this.scene.state.timer = this.scene.state.timer === 0 ? this.autoStartTime : this.scene.state.timer - 1;
-          this.scene.spinViaText.setText(`SPIN VIA ${this.scene.state.timer} secs`);
+          this.spinViaText.setText(`SPIN VIA ${this.scene.state.timer} secs`);
 
           if (this.scene.state.timer === 0) {
-            this.scene.wheel.spin(this.scene);
+            this.scene.spin();
             this.stopAutoSpinInterval();
             this.interval = null;
           }
@@ -60,7 +60,7 @@ export default class AutoStart {
 
     const spinViaRectangle = this.scene.add.rectangle(this.scene.x / 2 + 400, this.scene.y / 2 + 215, 180, 80, 0xffffff);
 
-    this.scene.spinViaText = this.scene.add.text(this.scene.x / 2 + 320, this.scene.y / 2 + 205, `SPIN VIA ${this.scene.state.timer} secs`, {
+    this.spinViaText = this.scene.add.text(this.scene.x / 2 + 320, this.scene.y / 2 + 205, `SPIN VIA ${this.scene.state.timer} secs`, {
       font: 'bold 20px Arial',
       fill: 'black',
       align: 'center',

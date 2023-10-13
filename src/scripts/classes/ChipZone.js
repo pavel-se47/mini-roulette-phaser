@@ -60,6 +60,8 @@ export default class ChipZone {
   }
 
   onSetChip(chip) {
+    let allBets = this.scene.state.valueChip;
+
     if (!this.scene.checkBet(chip)) {
       return false;
     }
@@ -70,12 +72,17 @@ export default class ChipZone {
     let currentBet = this.scene.stats.currentBet;
     let totalBet = this.scene.stats.totalBet;
     let balance = this.scene.stats.balance;
+    const existingBet = allBets.find(obj => obj.value === value);
 
-    this.scene.state.valueChip.push({
-      value: value,
-      color: this.colors.currentColor(value),
-      currentBet: this.scene.stats.currentBet,
-    });
+    if (existingBet) {
+      existingBet.currentBet += this.scene.stats.currentBet;
+    } else {
+      allBets.push({
+        value: value,
+        color: this.colors.currentColor(value),
+        currentBet: this.scene.stats.currentBet,
+      });
+    }
 
     if (totalBet + currentBet > balance) {
       this.scene.notifications.alertNotification('Not enough funds to bet!');
@@ -84,14 +91,14 @@ export default class ChipZone {
     this.scene.state.valueWheel = null;
     this.scene.stats.setTotalBetValue((totalBet += currentBet));
     this.scene.betZone.calculateTotalBet();
-    this.scene.onSetTextButton(this.scene.defaultTextButton, this.scene.defaultColorButton);
+    this.scene.onSetTextButton();
     return true;
   }
 
   createButtonClearChipZone() {
     const clearChipZoneRectangle = this.scene.add.rectangle(0, 0, 180, 80, 0xffffff);
     const clearChipZoneText = this.scene.add
-      .text(0, 0, 'Clear chip zone', {
+      .text(0, 0, 'Reset all', {
         font: 'bold 20px Arial',
         fill: 'black',
         align: 'center',
@@ -105,30 +112,9 @@ export default class ChipZone {
       .on(
         'pointerdown',
         () => {
-          this.setValue();
+          this.scene.setDefaultValue();
         },
         this.scene
       );
-  }
-
-  setValue() {
-    if (!this.scene.wheel.isSpinning) {
-      this.scene.state.valueChip = [];
-      this.scene.state.valueWheel = null;
-      this.scene.stats.setTotalBetValue(0);
-      this.scene.stats.setCurrentBetValue(10);
-      this.scene.stats.setCurrentWinValue(0);
-      this.deleteValue();
-      this.scene.onSetTextButton(this.scene.defaultTextButton, this.scene.defaultColorButton);
-    }
-  }
-
-  deleteValue() {
-    this.chipArray.forEach(obj => {
-      if (obj.value) {
-        obj.value = 0;
-        obj.valueText.setText('');
-      }
-    });
   }
 }

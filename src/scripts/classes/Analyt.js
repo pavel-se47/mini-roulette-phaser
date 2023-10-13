@@ -37,31 +37,30 @@ export default class Analyt {
     let allBets = this.scene.state.valueChip;
     let possibleCombs = [];
 
-    for (let j = 0; j < payTable.length; j += 1) {
-      let colorPt = payTable[j].color;
-      let valuePt = payTable[j].value;
+    payTable.forEach(objectPt => {
+      let valuePt = objectPt.value;
 
       if (valueWh === valuePt) {
-        possibleCombs.push(payTable[j]);
-        if (colorPt === 'red') {
-          possibleCombs.push(payTable.find(obj => obj.value === 'AR'));
-        } else if (colorPt === 'black') {
-          possibleCombs.push(payTable.find(obj => obj.value === 'AB'));
-        }
+        possibleCombs.push(objectPt);
+
+        payTable.forEach(obj => {
+          if (colorWh === obj.color && typeof obj.value === 'string') {
+            possibleCombs.push(obj);
+          }
+        });
       }
-    }
+    });
 
     allBets.forEach(objectVc => {
       let valueCh = objectVc?.value;
       let colorCh = objectVc?.color;
       let bet = objectVc?.currentBet;
 
-      for (let i = 0; i < possibleCombs.length; i += 1) {
+      possibleCombs.forEach(objectPc => {
         let balance = this.scene.stats.balance;
         let currentWin = this.scene.stats.currentWin;
-        let valuePc = possibleCombs[i].value;
-        let colorPc = possibleCombs[i].color;
-        let valuePcCoef = possibleCombs[i].coef;
+        let valuePc = objectPc.value;
+        let valuePcCoef = objectPc.coef;
         let winValue = bet * valuePcCoef;
 
         if (valueCh === valuePc) {
@@ -69,7 +68,8 @@ export default class Analyt {
           this.scene.stats.setCurrentWinValue((currentWin = winValue));
           this.notifications.successNotification(objectVc, valuePcCoef);
         }
-      }
+      });
+
       if ((valueCh !== valueWh && colorCh !== colorWh) || (valueCh !== valueWh && colorCh === colorWh && typeof valueCh !== 'string')) {
         if (!this.scene.state.autoStart) {
           this.scene.stats.setTotalBetValue(0);
@@ -84,6 +84,8 @@ export default class Analyt {
         this.notifications.alertNotification('Top up your balance to continue playing!');
         this.scene.state.autoStart = false;
         this.scene.state.valueChip = [];
+        this.scene.state.timer = 10;
+        this.scene.autostart.spinViaText.setText(`SPIN VIA ${this.scene.state.timer} secs`);
         this.scene.stats.setBalanceValue(0);
         this.scene.stats.setCurrentBetValue(0);
         this.scene.stats.setTotalBetValue(0);
