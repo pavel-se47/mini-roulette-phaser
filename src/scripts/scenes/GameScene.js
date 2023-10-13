@@ -11,7 +11,7 @@ import limits from '../../limits.json';
 export default class GameScene extends Phaser.Scene {
   constructor() {
     super('GameScene');
-    this.sectors = 37;
+    this.sectors = 33;
     this.valueNumberBet = [10, 20, 50, 100, 150];
     this.valueColorsBet = [0xf5deb3, 0xadff2f, 0x0000ff, 0xff00ff, 0xffa500];
     this.greenValue = [0];
@@ -175,15 +175,15 @@ export default class GameScene extends Phaser.Scene {
   }
 
   onSetTextButton(text, color) {
-    if (!text) {
-      this.wheel.buttonOnWheelText.setText(this.defaultTextButton);
-    } else {
+    if (text || text === 0) {
       this.wheel.buttonOnWheelText.setText(text);
-    }
-    if (!color) {
-      this.wheel.buttonOnWheel.fillColor = this.defaultColorButton;
     } else {
+      this.wheel.buttonOnWheelText.setText(this.defaultTextButton);
+    }
+    if (color) {
       this.wheel.buttonOnWheel.fillColor = color;
+    } else {
+      this.wheel.buttonOnWheel.fillColor = this.defaultColorButton;
     }
   }
 

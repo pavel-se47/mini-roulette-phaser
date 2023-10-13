@@ -1,3 +1,5 @@
+import textStyle from '../../textStyle.json';
+
 export default class Stats {
   #balance;
   #currentBet;
@@ -51,29 +53,28 @@ export default class Stats {
   createStats() {
     const statsRectangle = this.scene.add.rectangle(this.scene.x / 2, 510, 875, 80, 0xffffff);
 
-    this.balanceText = this.scene.add.text(this.scene.x / 2 - 400, this.scene.y / 2 - 50, 'Your balance \n' + this.balance, {
-      font: 'bold 20px Arial',
-      fill: 'black',
-      align: 'center',
-    });
+    this.balanceText = this.scene.add.text(this.scene.x / 2 - 400, this.scene.y / 2 - 50, 'Your balance \n' + this.balance, textStyle.balanceText);
 
-    this.currentBetText = this.scene.add.text(this.scene.x / 2 - 200, this.scene.y / 2 - 50, 'Your selected bet \n' + this.currentBet, {
-      font: 'bold 20px Arial',
-      fill: 'black',
-      align: 'center',
-    });
+    this.currentBetText = this.scene.add.text(
+      this.scene.x / 2 - 200,
+      this.scene.y / 2 - 50,
+      'Your selected bet \n' + this.currentBet,
+      textStyle.currentBetText
+    );
 
-    this.totalBetText = this.scene.add.text(this.scene.x / 2 + 40, this.scene.y / 2 - 50, 'Your total bet \n' + this.totalBet, {
-      font: 'bold 20px Arial',
-      fill: 'black',
-      align: 'center',
-    });
+    this.totalBetText = this.scene.add.text(
+      this.scene.x / 2 + 40,
+      this.scene.y / 2 - 50,
+      'Your total bet \n' + this.totalBet,
+      textStyle.totalBetText
+    );
 
-    this.currentWinText = this.scene.add.text(this.scene.x / 2 + 240, this.scene.y / 2 - 50, 'Your current win \n' + this.currentWin, {
-      font: 'bold 20px Arial',
-      fill: 'black',
-      align: 'center',
-    });
+    this.currentWinText = this.scene.add.text(
+      this.scene.x / 2 + 240,
+      this.scene.y / 2 - 50,
+      'Your current win \n' + this.currentWin,
+      textStyle.currentWinText
+    );
   }
 
   setBalanceValue(value) {

@@ -1,3 +1,5 @@
+import textStyle from '../../textStyle.json';
+
 export default class BetZone {
   constructor(scene) {
     this.scene = scene;
@@ -9,11 +11,7 @@ export default class BetZone {
   }
 
   createBet() {
-    const betText = this.scene.add.text(this.scene.x / 2 - 470, this.scene.y / 2 + 30, 'Your bet', {
-      font: 'bold 30px Arial',
-      fill: 'white',
-      align: 'center',
-    });
+    const betText = this.scene.add.text(this.scene.x / 2 - 470, this.scene.y / 2 + 30, 'Your bet', textStyle.betText);
 
     for (let i = 0; i < this.scene.valueNumberBet.length; i += 1) {
       let x = this.scene.x / 2 - 400;
@@ -23,12 +21,7 @@ export default class BetZone {
 
       let bet = this.scene.add.circle(0, 0, 36, betColor);
 
-      let text = this.scene.add
-        .text(0, 0, betNumber, {
-          font: 'bold 24px Arial',
-          fill: 'white',
-        })
-        .setOrigin(0.5);
+      let text = this.scene.add.text(0, 0, betNumber, textStyle.textInBet).setOrigin(0.5);
 
       let containerBet = this.scene.add
         .container(x, y, [bet, text])

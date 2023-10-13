@@ -1,0 +1,124 @@
+{   
+
+"startAutoStartText":{
+    "font": "bold 20px Arial",
+    "fill": "black",
+    "align": "center"
+}, 
+
+"spinViaText":{
+    "font": "bold 20px Arial",
+    "fill": "black",
+    "align": "center"
+}, 
+
+"stopAutoStartText":{
+    "font": "bold 20px Arial",
+    "fill": "black",
+    "align": "center"
+}, 
+
+"betText":{
+    "font": "bold 30px Arial",
+    "fill": "white",
+    "align": "center"
+}, 
+
+"textInBet":{
+    "font": "bold 24px Arial",
+    "fill": "white"
+
+}, 
+
+"textInChip":{
+    "font": "bold 24px Arial",
+    "fill": "white"
+},
+
+"textValueInChip":{
+    "font": "bold 18px Arial",
+    "fill": "yellow"
+},
+
+"chipZoneText":{
+    "font": "bold 30px Arial",
+    "fill": "white",
+    "align": "center"
+},
+
+"resetButtonText":{
+    "font": "bold 20px Arial",
+    "fill": "black",
+    "align": "center"
+},
+
+"textInWheel":{
+    "font": "bold 26px Arial",
+    "fill": "white"
+},
+
+"buttonOnWheelText":{
+    "font": "bold 30px Arial",
+    "fill": "white"
+}, 
+
+"balanceText":{
+    "font": "bold 20px Arial",
+    "fill": "black",
+    "align": "center"
+},
+
+"currentBetText":{
+    "font": "bold 20px Arial",
+    "fill": "black",
+    "align": "center"
+},
+
+"totalBetText":{
+    "font": "bold 20px Arial",
+    "fill": "black",
+    "align": "center"
+},
+
+"currentWinText":{
+    "font": "bold 20px Arial",
+    "fill": "black",
+    "align": "center"
+},
+
+"buttonRulesText":{
+    "font": "bold 30px Arial",
+    "fill": "black",
+    "align": "center"
+},
+
+"rulesText":{
+    "font": "bold 20px Arial",
+    "fill": "black",
+    "align": "center"
+},
+
+"limitsNumbersText":{
+    "font": "bold 20px Arial",
+    "fill": "black",
+    "align": "center"
+},
+
+"limitsColorsText":{
+    "font": "bold 20px Arial",
+    "fill": "black",
+    "align": "center"
+},
+
+"closeText":{
+    "font": "bold 20px Arial",
+    "fill": "black",
+    "align": "center"
+}
+
+} 
+
+
+
+
+

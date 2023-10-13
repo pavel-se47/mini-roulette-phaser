@@ -1,5 +1,6 @@
 import Chip from './Chip';
 import Colors from './Colors';
+import textStyle from '../../textStyle.json';
 
 export default class ChipZone {
   constructor(scene) {
@@ -19,11 +20,7 @@ export default class ChipZone {
   createChipZone() {
     this.group = this.scene.add.container(this.scene.x / 2 - 250, this.scene.y / 2 + 100);
 
-    const chipZoneText = this.scene.add.text(160, -80, 'Chip zone', {
-      font: 'bold 30px Arial',
-      fill: 'white',
-      align: 'center',
-    });
+    const chipZoneText = this.scene.add.text(160, -80, 'Chip zone', textStyle.chipZoneText);
 
     this.group.add(chipZoneText);
 
@@ -97,13 +94,7 @@ export default class ChipZone {
 
   createButtonClearChipZone() {
     const clearChipZoneRectangle = this.scene.add.rectangle(0, 0, 180, 80, 0xffffff);
-    const clearChipZoneText = this.scene.add
-      .text(0, 0, 'Reset all', {
-        font: 'bold 20px Arial',
-        fill: 'black',
-        align: 'center',
-      })
-      .setOrigin(0.5);
+    const clearChipZoneText = this.scene.add.text(0, 0, 'Reset all', textStyle.resetButtonText).setOrigin(0.5);
 
     this.containerButtonClearChipZone = this.scene.add
       .container(this.scene.x / 2 + 400, 965, [clearChipZoneRectangle, clearChipZoneText])

@@ -1,3 +1,5 @@
+import textStyle from '../../textStyle.json';
+
 export default class AutoStart {
   constructor(scene) {
     this.scene = scene;
@@ -37,13 +39,7 @@ export default class AutoStart {
   createAutoStartPanel() {
     const startAutoStartRectangle = this.scene.add.rectangle(0, 0, 180, 80, 0xffffff);
 
-    const startAutoStartText = this.scene.add
-      .text(0, 0, 'Start Auto Spin', {
-        font: 'bold 20px Arial',
-        fill: 'black',
-        align: 'center',
-      })
-      .setOrigin(0.5);
+    const startAutoStartText = this.scene.add.text(0, 0, 'Start Auto Spin', textStyle.startAutoStartText).setOrigin(0.5);
 
     this.containerStartAutoStart = this.scene.add
       .container(this.scene.x / 2 + 400, this.scene.y / 2 + 115, [startAutoStartRectangle, startAutoStartText])
@@ -60,21 +56,16 @@ export default class AutoStart {
 
     const spinViaRectangle = this.scene.add.rectangle(this.scene.x / 2 + 400, this.scene.y / 2 + 215, 180, 80, 0xffffff);
 
-    this.spinViaText = this.scene.add.text(this.scene.x / 2 + 320, this.scene.y / 2 + 205, `SPIN VIA ${this.scene.state.timer} secs`, {
-      font: 'bold 20px Arial',
-      fill: 'black',
-      align: 'center',
-    });
+    this.spinViaText = this.scene.add.text(
+      this.scene.x / 2 + 320,
+      this.scene.y / 2 + 205,
+      `SPIN VIA ${this.scene.state.timer} secs`,
+      textStyle.spinViaText
+    );
 
     const stopAutoStartRectangle = this.scene.add.rectangle(0, 0, 180, 80, 0xffffff);
 
-    const stopAutoStartText = this.scene.add
-      .text(0, 0, 'Stop Auto Spin', {
-        font: 'bold 20px Arial',
-        fill: 'black',
-        align: 'center',
-      })
-      .setOrigin(0.5);
+    const stopAutoStartText = this.scene.add.text(0, 0, 'Stop Auto Spin', textStyle.stopAutoStartText).setOrigin(0.5);
 
     this.containerStopAutoStart = this.scene.add
       .container(this.scene.x / 2 + 400, this.scene.y / 2 + 315, [stopAutoStartRectangle, stopAutoStartText])

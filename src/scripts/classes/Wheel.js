@@ -1,4 +1,5 @@
 import Colors from './Colors';
+import textStyle from '../../textStyle.json';
 
 export default class Wheel {
   constructor(scene, sectors, numbers, colors) {
@@ -36,10 +37,7 @@ export default class Wheel {
       const centerY = radius * 0.8 * Math.sin((startAngle + endAngle) / 2);
 
       const text = this.scene.add
-        .text(centerX, centerY, this.numbers[i], {
-          font: 'bold 26px Arial',
-          fill: 'white',
-        })
+        .text(centerX, centerY, this.numbers[i], textStyle.textInWheel)
         .setOrigin(0.5)
         .setRotation(startAngle + (endAngle - startAngle) / 2);
 
@@ -51,12 +49,7 @@ export default class Wheel {
   createButtonOnWheel() {
     this.buttonOnWheel = this.scene.add.circle(0, 0, 50, 0xffa500).setStrokeStyle(8, 0xffffff);
 
-    this.buttonOnWheelText = this.scene.add
-      .text(0, 0, this.scene.defaultTextButton, {
-        font: 'bold 30px Arial',
-        fill: 'white',
-      })
-      .setOrigin(0.5);
+    this.buttonOnWheelText = this.scene.add.text(0, 0, this.scene.defaultTextButton, textStyle.buttonOnWheelText).setOrigin(0.5);
 
     this.containerButtonOnWheel = this.scene.add
       .container(this.scene.x / 2, 250, [this.buttonOnWheel, this.buttonOnWheelText])

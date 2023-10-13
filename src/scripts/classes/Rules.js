@@ -1,4 +1,5 @@
 import limits from '../../limits.json';
+import textStyle from '../../textStyle.json';
 
 export default class Rules extends Phaser.GameObjects.Container {
   constructor(scene) {
@@ -15,11 +16,7 @@ export default class Rules extends Phaser.GameObjects.Container {
   createButtonRulesAndLimits() {
     const buttonRules = this.scene.add.circle(1200, 420, 30, '0xffffff').setInteractive();
 
-    const buttonRulesText = this.scene.add.text(1196, 405, 'i', {
-      font: 'bold 30px Arial',
-      fill: 'black',
-      align: 'center',
-    });
+    const buttonRulesText = this.scene.add.text(1196, 405, 'i', textStyle.buttonRulesText);
 
     buttonRules.on('pointerdown', () => {
       this.toggleRulesAndLimits();
@@ -33,32 +30,14 @@ export default class Rules extends Phaser.GameObjects.Container {
       -315,
       -130,
       'Правила игры.\n\nВыберите фишку в поле "Your Bet", которую хотите поставить.\nСделайте ставку в "Chip Zone".\nНажмите кнопку "SPIN" или "Start Auto Spin".\nКолесо начнет крутится и укажет на выигрышный сектор.\nНомер и цвет выпавшего сектора отобразится в центре круга \nдо следующей Вашей ставки.',
-      {
-        font: 'bold 20px Arial',
-        fill: 'black',
-        align: 'center',
-      }
+      textStyle.rulesText
     );
 
-    const limitsNumbersText = this.scene.add.text(-270, 80, `Limits 'AR' and 'AB' bet \nmax ${limits.colors} credits`, {
-      font: 'bold 20px Arial',
-      fill: 'black',
-      align: 'center',
-    });
+    const limitsNumbersText = this.scene.add.text(-270, 80, `Limits 'AR' and 'AB' bet \nmax ${limits.colors} credits`, textStyle.limitsNumbersText);
 
-    const limitsColorsText = this.scene.add.text(80, 80, `Limits numbers bet \nmax ${limits.numbers} credits`, {
-      font: 'bold 20px Arial',
-      fill: 'black',
-      align: 'center',
-    });
+    const limitsColorsText = this.scene.add.text(80, 80, `Limits numbers bet \nmax ${limits.numbers} credits`, textStyle.limitsColorsText);
 
-    const closeText = this.scene.add
-      .text(300, -130, 'X', {
-        font: 'bold 20px Arial',
-        fill: 'black',
-        align: 'center',
-      })
-      .setInteractive();
+    const closeText = this.scene.add.text(300, -130, 'X', textStyle.closeText).setInteractive();
 
     this.add([statsRectangle, rulesText, limitsNumbersText, limitsColorsText, closeText]).setVisible(!this.visible);
 
