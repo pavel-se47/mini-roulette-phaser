@@ -1,4 +1,5 @@
 import payTable from '../../payTable.json';
+import payTableDice from '../../payTableDice.json';
 import Notifications from '../classes/Notifications';
 
 export default class Analyt {
@@ -8,7 +9,11 @@ export default class Analyt {
   }
 
   getValue(endValue) {
-    return Phaser.Utils.Array.GetRandom(payTable, 2, endValue);
+    if (this.scene.gameMode === 'roulette') {
+      return Phaser.Utils.Array.GetRandom(payTable, 2, endValue);
+    } else if (this.scene.gameMode === 'dice') {
+      return Phaser.Utils.Array.GetRandom(payTableDice, 0, endValue);
+    }
   }
 
   valueWheelCheck(winValue, allBets) {

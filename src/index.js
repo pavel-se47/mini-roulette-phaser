@@ -8,6 +8,9 @@ const config = {
   type: Phaser.AUTO,
   width: 1920,
   height: 1080,
+  dom: {
+    createContainer: true,
+  },
   scene: [BootScene, PreloadScene, StartScene, GameScene],
   scale: {
     mode: Phaser.Scale.FIT,

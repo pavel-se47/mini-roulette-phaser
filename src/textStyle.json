@@ -114,7 +114,23 @@
     "font": "bold 20px Arial",
     "fill": "black",
     "align": "center"
-}
+}, 
+
+"sectorDinamicsText":{
+    "font": "bold 20px Arial",
+    "fill": "black",
+    "align": "center"
+},
+
+"buttonSector":{
+    "font": "bold 20px Arial",
+    "fill": "#000000",
+    "backgroundColor": "white",
+    "padding": {
+      "x": 20,
+      "y": 20
+    }
+  }
 
 } 
 

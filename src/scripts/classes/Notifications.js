@@ -28,7 +28,7 @@ export default class Notifications {
   alertNotification(title) {
     alert({
       title: title,
-      delay: 1000,
+      delay: 2000,
       hide: true,
       width: '400px',
     });
@@ -37,7 +37,7 @@ export default class Notifications {
   infoNotification(title) {
     info({
       title: title,
-      delay: 1000,
+      delay: 2000,
       hide: true,
       width: '400px',
     });
