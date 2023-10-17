@@ -44,6 +44,7 @@ export default class GameScene extends Phaser.Scene {
   }
 
   preload() {
+    this.load.html('input', 'src/assets/text/nameform.html');
     this.createBackground();
   }
 

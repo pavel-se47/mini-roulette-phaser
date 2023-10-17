@@ -8,10 +8,11 @@ const config = {
   type: Phaser.AUTO,
   width: 1920,
   height: 1080,
+  scene: [BootScene, PreloadScene, StartScene, GameScene],
+  parent: 'divId',
   dom: {
     createContainer: true,
   },
-  scene: [BootScene, PreloadScene, StartScene, GameScene],
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
@@ -25,4 +26,4 @@ const config = {
   },
 };
 
-new Phaser.Game(config);
+const game = new Phaser.Game(config);
