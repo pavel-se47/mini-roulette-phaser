@@ -47,7 +47,7 @@ export default class Wheel {
   }
 
   createButtonOnWheel() {
-    this.buttonOnWheel = this.scene.add.circle(0, 0, 50, 0xffa500).setStrokeStyle(8, 0xffffff);
+    this.buttonOnWheel = this.scene.add.circle(0, 0, 50, this.scene.defaultColorButton).setStrokeStyle(8, 0xffffff);
 
     this.buttonOnWheelText = this.scene.add.text(0, 0, this.scene.defaultTextButton, textStyle.buttonOnWheelText).setOrigin(0.5);
 
@@ -58,7 +58,9 @@ export default class Wheel {
       .on(
         'pointerdown',
         () => {
-          this.scene.spin();
+          if (!this.isSpinning) {
+            this.scene.spin();
+          }
         },
         this.scene
       );

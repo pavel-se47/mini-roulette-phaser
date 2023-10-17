@@ -1,43 +1,71 @@
 import textStyle from '../../textStyle.json';
 
 export default class Dice {
-  constructor(scene, sectors, numbers, colors) {
+  constructor(scene, sectors, numbers) {
     this.scene = scene;
     this.sectors = sectors;
-    this.colorSector = colors;
     this.numbers = numbers;
     this.isRoll = false;
-    this.spinDuration = 3000;
+    this.rollDuration = 2000;
     this.containerDice = null;
     this.create();
   }
 
   create() {
-    this.createDice();
-    this.createButtonOnWheel();
+    this.createDiceDefault();
+    this.createButtonOnDice();
   }
 
-  createDice() {
-    let graphics = this.scene.add.graphics().fillStyle(0xaaaaaa).fillRect(0, 0, 300, 300).lineStyle(8, 0xffffff).strokeRect(0, 0, 300, 300);
-
-    this.containerDice = this.scene.add.container(this.scene.x / 2 - 150, this.scene.y / 2 - 440, [graphics]);
+  createDiceDefault() {
+    this.diceWin?.destroy();
+    this.diceDefault = this.scene.add.sprite(this.scene.x / 2, 250, 'dice').setScale(0.7);
   }
 
-  createButtonOnWheel() {
-    this.buttonOnDice = this.scene.add.circle(0, 0, 50, 0xaaaaaa).setStrokeStyle(8, 0xffffff);
+  createDiceWin(i) {
+    this.diceDefault?.destroy();
+    this.diceWin = this.scene.add.sprite(this.scene.x / 2, 250, 'dice' + i).setScale(0.6);
+  }
+
+  setWinImgDice() {
+    for (let i = 1; i <= this.numbers.length; i += 1) {
+      if (this.scene.state.valueWheel.value === i) {
+        this.createDiceWin(i);
+      }
+    }
+  }
+
+  createButtonOnDice() {
+    this.buttonOnDice = this.scene.add.circle(0, 0, 50, this.scene.defaultTextButtonDice).setStrokeStyle(8, 0xffffff);
 
     this.buttonOnDiceText = this.scene.add.text(0, 0, this.scene.defaultTextButtonDice, textStyle.buttonOnWheelText).setOrigin(0.5);
 
     this.containerButtonOnDice = this.scene.add
-      .container(this.scene.x / 2, 250, [this.buttonOnDice, this.buttonOnDiceText])
+      .container(this.scene.x / 2, 850, [this.buttonOnDice, this.buttonOnDiceText])
       .setSize(85, 85)
       .setInteractive()
       .on(
         'pointerdown',
         () => {
-          this.scene.spin();
+          if (!this.isRoll) {
+            this.scene.spin();
+          }
         },
         this.scene
       );
+  }
+
+  rotation() {
+    if (!this.isRoll) {
+      this.isRoll = true;
+      this.roll = this.scene.tweens.add({
+        targets: this.diceDefault,
+        angle: 1080,
+        duration: this.rollDuration,
+        ease: 'Cubic.easeOut',
+        onComplete: () => {
+          this.isRoll = false;
+        },
+      });
+    }
   }
 }

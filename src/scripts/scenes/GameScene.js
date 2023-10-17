@@ -11,14 +11,11 @@ import Dinamics from '../classes/Dinamics';
 import limits from '../../limits.json';
 import textStyle from '../../textStyle.json';
 
-// сделать инпут на выбор секторов
-
-// сделать игру в кости
-
 export default class GameScene extends Phaser.Scene {
   constructor() {
     super('GameScene');
     this.gameMode = null;
+    //roulette
     this.sectors = 33;
     this.valueNumbersWheel = [];
     this.valueNumbersWheelCopy = [];
@@ -32,93 +29,62 @@ export default class GameScene extends Phaser.Scene {
     this.valueColors = [0x00cc00, 0x000000, 0xff0000];
     this.defaultTextButton = 'SPIN';
     this.defaultColorButton = '0xffa500';
-
-    this.sectorsDice = 6;
-    this.valueNumbersDice = [1, 2, 3, 4, 5, 6];
-    this.valueColorsDice = '0xaaaaaa';
-    this.defaultTextButtonDice = 'ROLL';
-    this.defaultColorButtonDice = '0xaaaaaa';
-
     this.state = {
       valueWheel: null,
       valueChip: [],
       autoStart: false,
       timer: 10,
     };
+    // dice
+    this.sectorsDice = 6;
+    this.valueNumbersDice = [1, 2, 3, 4, 5, 6];
+    this.valueColorsDice = '0x000000';
+    this.defaultTextButtonDice = 'ROLL';
+    this.defaultColorButtonDice = '0x000000';
   }
 
   preload() {
     this.createBackground();
   }
 
-  create() {
+  create(data) {
     this.x = this.sys.game.config.width;
     this.y = this.sys.game.config.height;
-    this.buttonStartRoulette();
-    this.buttonStartDice();
+
+    if (data?.key) {
+      this.gameMode = data.key;
+    } else {
+      alert('Invalid GameMode!');
+    }
+
+    this.setGameMode(this.gameMode);
   }
 
-  buttonStartRoulette() {
-    const buttonStartRouletteRectangle = this.add.rectangle(0, 0, 180, 80, 0xffffff);
-    const buttonStartRouletteText = this.add.text(0, 0, 'Start Roulette', textStyle.resetButtonText).setOrigin(0.5);
-
-    this.containerButtonStartRoulette = this.add
-      .container(this.x / 2, this.y / 2 - 50, [buttonStartRouletteRectangle, buttonStartRouletteText])
-      .setSize(180, 80)
-      .setInteractive()
-      .on(
-        'pointerdown',
-        () => {
-          this.startRoulette();
-          this.containerButtonStartRoulette.setVisible(false);
-          this.containerButtonStartDice.setVisible(false);
-        },
-        this
-      );
+  createBackground() {
+    this.add.sprite(this.sys.game.config.width / 2, this.sys.game.config.height / 2, 'bg1');
   }
 
-  buttonDestroyGame() {
-    const buttonDestroyGameRectangle = this.add.rectangle(0, 0, 180, 80, 0xffffff);
-    const buttonDestroyGameText = this.add.text(0, 0, 'Switch game', textStyle.resetButtonText).setOrigin(0.5);
+  setGameMode(gameMode) {
+    switch (gameMode) {
+      case 'roulette':
+        this.startRoulette();
+        break;
 
-    this.containerButtonDestroyGame = this.add
-      .container(615, 400, [buttonDestroyGameRectangle, buttonDestroyGameText])
-      .setSize(180, 80)
-      .setInteractive()
-      .on(
-        'pointerdown',
-        () => {
-          this.scene.stop();
-          this.scene.start();
-          this.gameMode = null;
-        },
-        this
-      );
-  }
+      case 'dice':
+        this.startDice();
+        break;
 
-  buttonStartDice() {
-    const buttonStartDiceRectangle = this.add.rectangle(0, 0, 180, 80, 0xffffff);
-    const buttonStartDiceText = this.add.text(0, 0, 'Start Dice', textStyle.resetButtonText).setOrigin(0.5);
-
-    this.containerButtonStartDice = this.add
-      .container(this.x / 2, this.y / 2 + 50, [buttonStartDiceRectangle, buttonStartDiceText])
-      .setSize(180, 80)
-      .setInteractive()
-      .on(
-        'pointerdown',
-        () => {
-          this.startDice();
-          this.containerButtonStartRoulette.setVisible(false);
-          this.containerButtonStartDice.setVisible(false);
-        },
-        this
-      );
+      default:
+        break;
+    }
   }
 
   startRoulette() {
     this.gameMode = 'roulette';
     this.checkSectors();
-    this.buttonDestroyGame();
+    this.valueNumbersWheel = [];
+    this.valueColorsWheel = [];
+    this.buttonSwitchGame();
     this.createGameFiled(this.sectors, this.valueNumbersWheel, this.valueColors);
 
     this.notifications = new Notifications();
@@ -134,25 +100,46 @@ export default class GameScene extends Phaser.Scene {
 
   startDice() {
     this.gameMode = 'dice';
-    this.buttonDestroyGame();
+    this.checkSectors();
+    this.buttonSwitchGame();
     this.createGameFiled(this.sectorsDice, this.valueNumbersDice, this.valueColorsDice);
 
     this.notifications = new Notifications();
     this.chipZone = new ChipZone(this);
     this.betZone = new BetZone(this);
     this.analytics = new Analyt(this);
-    this.dice = new Dice(this, this.sectorsDice, this.valueNumbersDice, this.valueColorsDice);
+    this.dice = new Dice(this, this.sectorsDice, this.valueNumbersDice);
     this.stats = new Stats(this);
   }
 
-  checkSectors() {
-    if (this.sectors < 3 || this.sectors > 37) {
-      throw new Error(alert('The number of sectors can be set from 3 to 37'));
-    }
+  buttonSwitchGame() {
+    const buttonSwitchGameRectangle = this.add.rectangle(0, 0, 200, 80, 0xffffff);
+    const buttonSwitchGameText = this.add.text(0, 0, 'Switch game', textStyle.startGameButton).setOrigin(0.5);
+
+    this.containerButtonSwitchGame = this.add
+      .container(622, 400, [buttonSwitchGameRectangle, buttonSwitchGameText])
+      .setSize(200, 80)
+      .setInteractive()
+      .on(
+        'pointerdown',
+        () => {
+          this.scene.start('Start');
+          this.gameMode = null;
+        },
+        this
+      );
   }
 
-  createBackground() {
-    this.add.sprite(this.sys.game.config.width / 2, this.sys.game.config.height / 2, 'bg1');
+  checkSectors() {
+    if (this.gameMode === 'roulette') {
+      if (this.sectors < 3 || this.sectors > 37) {
+        throw new Error(alert('The number of sectors can be set from 3 to 37'));
+      }
+    } else if (this.gameMode === 'dice') {
+      if (this.sectorsDice < 2 || this.sectorsDice > 6) {
+        throw new Error(alert('The number of sectors can be set from 2 to 6'));
+      }
+    }
   }
 
   createGameFiled(sectors, numbers, colors) {
@@ -267,19 +254,19 @@ export default class GameScene extends Phaser.Scene {
           }
         });
       } else if (this.gameMode === 'dice') {
-        this.onSetTextButton(this.state.valueWheel.value, this.state.valueWheel.colorHex);
-        this.pay();
-        this.state.valueChip = [];
-        this.deleteValue();
+        this.dice.rotation();
+        this.dice.roll.on('complete', () => {
+          this.onSetTextButton(this.state.valueWheel.value, this.state.valueWheel.colorHex);
+          this.pay();
+          this.state.valueChip = [];
+          this.deleteValue();
+          this.dice.setWinImgDice();
+        });
       }
     }
   }
 
   setValueWheel() {
-    // if (this.gameMode === 'roulette') {
-    // } else if (this.gameMode === 'dice') {
-    // }
-
     if (this.gameMode === 'roulette') {
       this.state.valueWheel = this.analytics.getValue(this.sectors);
     } else if (this.gameMode === 'dice') {
@@ -304,30 +291,38 @@ export default class GameScene extends Phaser.Scene {
         this.wheel.buttonOnWheel.fillColor = this.defaultColorButton;
       }
     } else if (this.gameMode === 'dice') {
-      if (text || text === 0) {
+      if (text) {
         this.dice.buttonOnDiceText.setText(text);
       } else {
         this.dice.buttonOnDiceText.setText(this.defaultTextButtonDice);
-      }
-      if (color) {
-        this.dice.buttonOnDice.fillColor = color;
-      } else {
-        this.dice.buttonOnDice.fillColor = this.defaultColorButtonDice;
       }
     }
   }
 
   setDefaultValue() {
-    if (!this.wheel.isSpinning) {
-      this.state.valueChip = [];
-      this.state.valueWheel = null;
-      this.state.timer = 10;
-      this.autoStart.spinViaText.setText(`SPIN VIA ${this.state.timer} secs`);
-      this.stats.setTotalBetValue(0);
-      this.stats.setCurrentBetValue(10);
-      this.stats.setCurrentWinValue(0);
-      this.deleteValue();
-      this.onSetTextButton();
+    if (this.gameMode === 'roulette') {
+      if (!this.wheel.isSpinning) {
+        this.state.timer = 10;
+        this.autoStart.spinViaText.setText(`SPIN VIA ${this.state.timer} secs`);
+        this.state.valueChip = [];
+        this.state.valueWheel = null;
+        this.stats.setTotalBetValue(0);
+        this.stats.setCurrentBetValue(10);
+        this.stats.setCurrentWinValue(0);
+        this.deleteValue();
+        this.onSetTextButton();
+      }
+    } else if (this.gameMode === 'dice') {
+      if (!this.dice.isRoll) {
+        this.dice.createDiceDefault();
+        this.state.valueChip = [];
+        this.state.valueWheel = null;
+        this.stats.setTotalBetValue(0);
+        this.stats.setCurrentBetValue(10);
+        this.stats.setCurrentWinValue(0);
+        this.deleteValue();
+        this.onSetTextButton();
+      }
     }
   }
 

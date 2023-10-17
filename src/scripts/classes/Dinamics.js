@@ -9,6 +9,9 @@ export default class Dinamics {
     this.create();
   }
 
+  // сделать инпут на ввод секторов с клавиатуры
+  // сделать фикс отображения спрайтов
+
   create() {
     this.createSectorDinamics();
     // this.createInput();
@@ -51,7 +54,6 @@ export default class Dinamics {
       chipSector.setCallback(() => {
         this.scene.sectors = chipSector.number;
         this.scene.valueNumbersWheel = [];
-        this.scene.valueNumbersWheelCopy = [];
         this.scene.valueColorsWheel = [];
         this.scene.scene.restart();
       });
@@ -60,29 +62,29 @@ export default class Dinamics {
     }
   }
 
-  createInput() {
-    const numericInput = this.scene.add.dom(260, 800, 'input', 'font-size: 24px; width: 200px; text-align: center;');
+  // createInput() {
+  //   const numericInput = this.scene.add.dom(260, 800, 'input', 'font-size: 24px; width: 200px; text-align: center;');
 
-    const button = this.scene.add.text(260, 850, 'Enter number', textStyle.buttonSector).setOrigin(0.5).setInteractive();
+  //   const button = this.scene.add.text(260, 850, 'Enter number', textStyle.buttonSector).setOrigin(0.5).setInteractive();
 
-    button
-      .on('pointerover', () => {
-        button.setBackgroundColor('#ffa500');
-      })
-      .on('pointerout', function () {
-        button.setBackgroundColor('white');
-      })
-      .on('pointerdown', () => {
-        const value = parseInt(document.querySelector('input[type="number"]'));
+  //   button
+  //     .on('pointerover', () => {
+  //       button.setBackgroundColor('#ffa500');
+  //     })
+  //     .on('pointerout', () => {
+  //       button.setBackgroundColor('white');
+  //     })
+  //     .on('pointerdown', () => {
+  //       const value = parseInt(document.querySelector('input[type="number"]'));
 
-        if (!isNaN(value) && value >= 3 && value <= 37) {
-          this.scene.sectors = value;
-          this.scene.valueNumbersWheel = [];
-          this.scene.valueColorsWheel = [];
-          this.scene.scene.restart();
-        } else {
-          this.scene.notifications.alertNotification('The number of sectors can be set from 3 to 37');
-        }
-      });
-  }
+  //       if (!isNaN(value) && value >= 3 && value <= 37) {
+  //         this.scene.sectors = value;
+  //         this.scene.valueNumbersWheel = [];
+  //         this.scene.valueColorsWheel = [];
+  //         this.scene.scene.restart();
+  //       } else {
+  //         this.scene.notifications.alertNotification('The number of sectors can be set from 3 to 37');
+  //       }
+  //     });
+  // }
 }

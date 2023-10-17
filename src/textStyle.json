@@ -130,7 +130,13 @@
       "x": 20,
       "y": 20
     }
-  }
+  },
+
+  "startGameButton":{
+    "font": "bold 24px Arial",
+    "fill": "black",
+    "align": "center"
+}
 
 } 
 

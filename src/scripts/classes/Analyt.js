@@ -21,19 +21,29 @@ export default class Analyt {
     let colorWh = winValue.color;
     let possibleCombs = [];
 
-    payTable.forEach(objectPt => {
-      let valuePt = objectPt.value;
+    if (this.scene.gameMode === 'roulette') {
+      payTable.forEach(objectPt => {
+        let valuePt = objectPt.value;
 
-      if (valueWh === valuePt) {
-        possibleCombs.push(objectPt);
+        if (valueWh === valuePt) {
+          possibleCombs.push(objectPt);
 
-        payTable.forEach(obj => {
-          if (colorWh === obj.color && typeof obj.value === 'string') {
-            possibleCombs.push(obj);
-          }
-        });
-      }
-    });
+          payTable.forEach(obj => {
+            if (colorWh === obj.color && typeof obj.value === 'string') {
+              possibleCombs.push(obj);
+            }
+          });
+        }
+      });
+    } else if (this.scene.gameMode === 'dice') {
+      payTableDice.forEach(objectPt => {
+        let valuePt = objectPt.value;
+
+        if (valueWh === valuePt) {
+          possibleCombs.push(objectPt);
+        }
+      });
+    }
 
     allBets.forEach(objectVc => {
       let valueCh = objectVc?.value;
