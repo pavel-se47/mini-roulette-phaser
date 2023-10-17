@@ -103,7 +103,9 @@ export default class ChipZone {
     this.scene.betZone.calculateTotalBet();
     this.scene.onSetTextButton();
 
-    if (this.scene.gameMode === 'dice' && this.scene.dice.diceWin) {
+    console.log(this.scene.dice.diceWin);
+
+    if (this.scene.gameMode === 'dice') {
       this.scene.dice.createDiceDefault();
     }
 

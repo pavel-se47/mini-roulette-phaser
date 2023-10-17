@@ -10,7 +10,6 @@ export default class Dinamics {
   }
 
   // сделать инпут на ввод секторов с клавиатуры
-  // сделать фикс отображения спрайтов
 
   create() {
     this.createSectorDinamics();

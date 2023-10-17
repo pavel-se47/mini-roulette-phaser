@@ -50,13 +50,7 @@ export default class GameScene extends Phaser.Scene {
   create(data) {
     this.x = this.sys.game.config.width;
     this.y = this.sys.game.config.height;
-
-    if (data?.key) {
-      this.gameMode = data.key;
-    } else {
-      alert('Invalid GameMode!');
-    }
-
+    this.gameMode = data?.key;
     this.setGameMode(this.gameMode);
   }
 

@@ -17,13 +17,27 @@ export default class Dice {
   }
 
   createDiceDefault() {
-    this.diceWin?.destroy();
-    this.diceDefault = this.scene.add.sprite(this.scene.x / 2, 250, 'dice').setScale(0.7);
+    if (this.diceWin) {
+      this.diceWin.setVisible(false);
+    }
+
+    if (this.diceDefault) {
+      this.diceDefault.setVisible(true);
+    } else {
+      this.diceDefault = this.scene.add.sprite(this.scene.x / 2, 250, 'dice').setScale(0.7);
+    }
   }
 
   createDiceWin(i) {
-    this.diceDefault?.destroy();
-    this.diceWin = this.scene.add.sprite(this.scene.x / 2, 250, 'dice' + i).setScale(0.6);
+    if (this.diceDefault) {
+      this.diceDefault.setVisible(false);
+    }
+
+    if (this.diceWin) {
+      this.diceWin.setVisible(true);
+    } else {
+      this.diceWin = this.scene.add.sprite(this.scene.x / 2, 250, 'dice' + i).setScale(0.6);
+    }
   }
 
   setWinImgDice() {
