@@ -51,7 +51,7 @@ export default class Stats {
   }
 
   createStats() {
-    const statsRectangle = this.scene.add.rectangle(this.scene.x / 2, 510, 875, 80, 0xffffff);
+    this.statsRectangle = this.scene.add.rectangle(this.scene.x / 2, 510, 875, 80, 0xffffff);
 
     this.balanceText = this.scene.add.text(this.scene.x / 2 - 400, this.scene.y / 2 - 50, 'Your balance \n' + this.balance, textStyle.balanceText);
 
@@ -95,5 +95,13 @@ export default class Stats {
   setCurrentWinValue(value) {
     this.currentWin = value;
     this.currentWinText.setText('Your current win \n' + this.currentWin);
+  }
+
+  destroyClass() {
+    this.statsRectangle?.destroy();
+    this.balanceText?.destroy();
+    this.currentBetText?.destroy();
+    this.totalBetText?.destroy();
+    this.currentWinText?.destroy();
   }
 }

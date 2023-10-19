@@ -1,11 +1,12 @@
 import textStyle from '../../textStyle.json';
 
 export default class Dice {
-  constructor(scene, sectors, numbers) {
+  constructor(scene, sectors, numbers, colors) {
     this.scene = scene;
     this.sectors = sectors;
     this.numbers = numbers;
-    this.isRoll = false;
+    this.colors = colors;
+    this.isPlay = false;
     this.rollDuration = 2000;
     this.containerDice = null;
     this.create();
@@ -18,7 +19,7 @@ export default class Dice {
 
   createDiceDefault() {
     if (this.diceWin) {
-      this.diceWin.setVisible(false);
+      this.diceWin.destroy();
     }
 
     if (this.diceDefault) {
@@ -33,26 +34,21 @@ export default class Dice {
       this.diceDefault.setVisible(false);
     }
 
-    if (this.diceWin) {
-      this.diceWin.setVisible(true);
-    } else {
-      this.diceWin = this.scene.add.sprite(this.scene.x / 2, 250, 'dice' + i).setScale(0.6);
-    }
+    this.diceWin = this.scene.add.sprite(this.scene.x / 2, 250, 'dice' + i).setScale(0.6);
   }
 
   setWinImgDice() {
     for (let i = 1; i <= this.numbers.length; i += 1) {
       if (this.scene.state.valueWheel.value === i) {
         this.createDiceWin(i);
+        return;
       }
     }
   }
 
   createButtonOnDice() {
-    this.buttonOnDice = this.scene.add.circle(0, 0, 50, this.scene.defaultTextButtonDice).setStrokeStyle(8, 0xffffff);
-
+    this.buttonOnDice = this.scene.add.circle(0, 0, 50, this.scene.defaultColorButtonDice).setStrokeStyle(8, 0xffffff);
     this.buttonOnDiceText = this.scene.add.text(0, 0, this.scene.defaultTextButtonDice, textStyle.buttonOnWheelText).setOrigin(0.5);
-
     this.containerButtonOnDice = this.scene.add
       .container(this.scene.x / 2, 850, [this.buttonOnDice, this.buttonOnDiceText])
       .setSize(85, 85)
@@ -60,8 +56,8 @@ export default class Dice {
       .on(
         'pointerdown',
         () => {
-          if (!this.isRoll) {
-            this.scene.spin();
+          if (!this.isPlay) {
+            this.scene.spin(this.sectors);
           }
         },
         this.scene
@@ -69,17 +65,24 @@ export default class Dice {
   }
 
   rotation() {
-    if (!this.isRoll) {
-      this.isRoll = true;
-      this.roll = this.scene.tweens.add({
+    if (!this.isPlay) {
+      this.isPlay = true;
+      this.tween = this.scene.tweens.add({
         targets: this.diceDefault,
         angle: 1080,
         duration: this.rollDuration,
         ease: 'Cubic.easeOut',
         onComplete: () => {
-          this.isRoll = false;
+          this.isPlay = false;
         },
       });
     }
+  }
+
+  destroyClass() {
+    this.diceDefault?.destroy();
+    this.diceWin?.destroy();
+    this.containerButtonOnDice?.destroy();
+    this.tween?.destroy();
   }
 }

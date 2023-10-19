@@ -1,5 +1,6 @@
 import Wheel from '../classes/Wheel';
 import Dice from '../classes/Dice';
+import Colors from '../classes/Colors';
 import BetZone from '../classes/BetZone';
 import ChipZone from '../classes/ChipZone';
 import Rules from '../classes/Rules';
@@ -8,7 +9,10 @@ import AutoStart from '../classes/AutoStart';
 import Notifications from '../classes/Notifications';
 import Analyt from '../classes/Analyt';
 import Dinamics from '../classes/Dinamics';
+import Button from '../classes/Button';
 import limits from '../../limits.json';
+import payTable from '../../payTable.json';
+import payTableDice from '../../payTableDice.json';
 import textStyle from '../../textStyle.json';
 
 export default class GameScene extends Phaser.Scene {
@@ -16,11 +20,9 @@ export default class GameScene extends Phaser.Scene {
     super('GameScene');
     this.gameMode = null;
     //roulette
-    this.sectors = 33;
+    this.sectors = 37;
     this.valueNumbersWheel = [];
-    this.valueNumbersWheelCopy = [];
     this.valueColorsWheel = [];
-    this.valueColorsWheelCopy = [];
     this.valueNumberBet = [10, 20, 50, 100, 150];
     this.valueColorsBet = [0xf5deb3, 0xadff2f, 0x0000ff, 0xff00ff, 0xffa500];
     this.greenValue = [0];
@@ -38,102 +40,131 @@ export default class GameScene extends Phaser.Scene {
     // dice
     this.sectorsDice = 6;
     this.valueNumbersDice = [1, 2, 3, 4, 5, 6];
-    this.valueColorsDice = '0x000000';
+    this.valueColorsDice = 0x000000;
     this.defaultTextButtonDice = 'ROLL';
     this.defaultColorButtonDice = '0x000000';
   }
 
   preload() {
-    this.load.html('input', 'src/assets/text/nameform.html');
     this.createBackground();
   }
 
-  create(data) {
+  create() {
     this.x = this.sys.game.config.width;
     this.y = this.sys.game.config.height;
-    this.gameMode = data?.key;
-    this.setGameMode(this.gameMode);
+    this.createButtonCreateDice();
+    this.createButtonCreateRoulette();
   }
 
   createBackground() {
-    this.add.sprite(this.sys.game.config.width / 2, this.sys.game.config.height / 2, 'bg1');
+    this.background = this.add.sprite(this.sys.game.config.width / 2, this.sys.game.config.height / 2, 'bg1');
   }
 
-  setGameMode(gameMode) {
-    switch (gameMode) {
+  createButtonCreateDice() {
+    this.createDice = new Button(this, this.x / 2, this.y / 2 - 50, 'Create Dice');
+    this.createDice.setActionDown(() => {
+      this.startGame('dice', Dice, this.sectorsDice, this.valueNumbersDice, this.valueColorsDice);
+      this.destroyButtonCreateDice();
+      this.destroyButtonCreateRoulette();
+    }, this);
+  }
+
+  createButtonCreateRoulette() {
+    this.createRoulette = new Button(this, this.x / 2, this.y / 2 + 50, 'Create Roulette');
+    this.createRoulette.setActionDown(() => {
+      this.startGame('roulette', Wheel, this.sectors, this.valueNumbersWheel, this.valueColorsWheel, this.valueColors);
+      this.destroyButtonCreateDice();
+      this.destroyButtonCreateRoulette();
+    }, this);
+  }
+
+  destroyButtonCreateDice() {
+    this.createDice?.destroyClass();
+    this.createDice = null;
+  }
+
+  destroyButtonCreateRoulette() {
+    this.createRoulette?.destroyClass();
+    this.createRoulette = null;
+  }
+
+  startGame(gameMode, objClass, sectors, numbers, colors, colorsStart) {
+    this.gameMode = gameMode;
+    this.checkSectors();
+    this.buttonSwitch();
+    this.createButtonResetAll();
+    this.createGameFiled(sectors, numbers, colorsStart);
+
+    if (this.gameMode === 'roulette') {
+      this.valueNumbersWheel = [];
+      this.valueColorsWheel = [];
+      this.autoStart = new AutoStart(this, sectors);
+      this.rulesContainer = this.add.container();
+      this.rulesContainer.add((this.rules = new Rules(this, 1200, 400)));
+      this.dinamics = new Dinamics(this, gameMode, objClass, this.sectors, this.valueNumbersWheel, this.valueColorsWheel, colorsStart);
+    }
+
+    this.chipZone = new ChipZone(this, sectors, numbers, colors);
+    this.notifications = new Notifications();
+    this.colors = new Colors(this);
+    this.betZone = new BetZone(this, this.valueNumberBet, this.valueColorsBet);
+    this.analytics = new Analyt(this);
+    this.gameObj = new objClass(this, sectors, numbers, colors);
+    this.stats = new Stats(this);
+  }
+
+  buttonSwitch() {
+    if (this.gameMode === 'dice') {
+      this.switchGame = new Button(this, 622, 400, 'Switch Roulette');
+      this.switchGame.setActionDown(() => {
+        this.destroyGame();
+        this.startGame('roulette', Wheel, this.sectors, this.valueNumbersWheel, this.valueColorsWheel, this.valueColors);
+      }, this);
+    } else if (this.gameMode === 'roulette') {
+      this.switchGame = new Button(this, 622, 400, 'Switch Dice');
+      this.switchGame.setActionDown(() => {
+        this.destroyGame();
+        this.startGame('dice', Dice, this.sectorsDice, this.valueNumbersDice, this.valueColorsDice);
+      }, this);
+    }
+  }
+
+  destroyGame() {
+    this.notifications = null;
+    this.analytics = null;
+    this.gameObj?.destroyClass();
+    this.gameObj = null;
+    this.betZone?.destroyClass();
+    this.betZone = null;
+    this.stats?.destroyClass();
+    this.stats = null;
+    this.chipZone?.destroyClass();
+    this.chipZone = null;
+    this.rulesContainer?.destroy();
+    this.autoStart?.destroyClass();
+    this.autoStart = null;
+    this.dinamics?.destroyClass();
+    this.dinamics = null;
+    this.switchGame?.destroyClass();
+    this.switchGame = null;
+  }
+
+  checkSectors() {
+    switch (this.gameMode) {
       case 'roulette':
-        this.startRoulette();
+        if (this.sectors < 3 || this.sectors > 37) {
+          throw new Error(alert('The number of sectors can be set from 3 to 37'));
+        }
         break;
 
       case 'dice':
-        this.startDice();
+        if (this.sectorsDice < 2 || this.sectorsDice > 6) {
+          throw new Error(alert('The number of sectors can be set from 2 to 6'));
+        }
         break;
 
       default:
         break;
-    }
-  }
-
-  startRoulette() {
-    this.gameMode = 'roulette';
-    this.checkSectors();
-    this.valueNumbersWheel = [];
-    this.valueColorsWheel = [];
-    this.buttonSwitchGame();
-    this.createGameFiled(this.sectors, this.valueNumbersWheel, this.valueColors);
-
-    this.notifications = new Notifications();
-    this.autoStart = new AutoStart(this);
-    this.chipZone = new ChipZone(this);
-    this.betZone = new BetZone(this);
-    this.analytics = new Analyt(this);
-    this.wheel = new Wheel(this, this.sectors, this.valueNumbersWheel, this.valueColorsWheel);
-    this.stats = new Stats(this);
-    this.rules = this.add.container(1494, 315, new Rules(this));
-    this.dinamics = new Dinamics(this);
-  }
-
-  startDice() {
-    this.gameMode = 'dice';
-    this.checkSectors();
-    this.buttonSwitchGame();
-    this.createGameFiled(this.sectorsDice, this.valueNumbersDice, this.valueColorsDice);
-
-    this.notifications = new Notifications();
-    this.chipZone = new ChipZone(this);
-    this.betZone = new BetZone(this);
-    this.analytics = new Analyt(this);
-    this.dice = new Dice(this, this.sectorsDice, this.valueNumbersDice);
-    this.stats = new Stats(this);
-  }
-
-  buttonSwitchGame() {
-    const buttonSwitchGameRectangle = this.add.rectangle(0, 0, 200, 80, 0xffffff);
-    const buttonSwitchGameText = this.add.text(0, 0, 'Switch game', textStyle.startGameButton).setOrigin(0.5);
-
-    this.containerButtonSwitchGame = this.add
-      .container(622, 400, [buttonSwitchGameRectangle, buttonSwitchGameText])
-      .setSize(200, 80)
-      .setInteractive()
-      .on(
-        'pointerdown',
-        () => {
-          this.scene.start('Start');
-          this.gameMode = null;
-        },
-        this
-      );
-  }
-
-  checkSectors() {
-    if (this.gameMode === 'roulette') {
-      if (this.sectors < 3 || this.sectors > 37) {
-        throw new Error(alert('The number of sectors can be set from 3 to 37'));
-      }
-    } else if (this.gameMode === 'dice') {
-      if (this.sectorsDice < 2 || this.sectorsDice > 6) {
-        throw new Error(alert('The number of sectors can be set from 2 to 6'));
-      }
     }
   }
 
@@ -142,7 +173,6 @@ export default class GameScene extends Phaser.Scene {
       case 'roulette':
         this.createArrNum(sectors);
         this.createArrColorForNum(numbers, colors);
-        this.createCopyArr();
         break;
 
       case 'dice':
@@ -156,7 +186,7 @@ export default class GameScene extends Phaser.Scene {
   createArrNum(sectors) {
     this.valueNumbersWheel.push(this.greenValue[0]);
 
-    for (let i = 0; i < sectors; i += 1) {
+    for (let i = 0; i < sectors / 2; i += 1) {
       if (this.valueNumbersWheel.length !== sectors) {
         this.valueNumbersWheel.push(this.redValue[i]);
       }
@@ -182,16 +212,6 @@ export default class GameScene extends Phaser.Scene {
           break;
       }
     }
-  }
-
-  createCopyArr() {
-    this.valueNumbersWheelCopy = JSON.parse(JSON.stringify(this.valueNumbersWheel));
-    this.valueColorsWheelCopy = JSON.parse(JSON.stringify(this.valueColorsWheel));
-
-    this.valueNumbersWheelCopy.push('AR');
-    this.valueColorsWheelCopy.push(16711680);
-    this.valueNumbersWheelCopy.push('AB');
-    this.valueColorsWheelCopy.push(0);
   }
 
   checkBet(chip) {
@@ -231,102 +251,203 @@ export default class GameScene extends Phaser.Scene {
     return true;
   }
 
-  spin() {
+  spin(sectors) {
     if (this.checkBeforeSpin()) {
       this.stats.setBalanceValue((this.stats.balance -= this.stats.totalBet));
-      this.setValueWheel();
+      this.setValueWheel(sectors);
       this.onSetTextButton();
-
-      if (this.gameMode === 'roulette') {
-        this.wheel.rotation();
-        this.wheel.tweens.on('complete', () => {
-          this.onSetTextButton(this.state.valueWheel.value, this.state.valueWheel.colorHex);
-          this.pay();
-          this.autoStart.startAutoSpinInterval();
-          if (!this.state.autoStart) {
-            this.state.valueChip = [];
-            this.deleteValue();
-          }
-        });
-      } else if (this.gameMode === 'dice') {
-        this.dice.rotation();
-        this.dice.roll.on('complete', () => {
-          this.onSetTextButton(this.state.valueWheel.value, this.state.valueWheel.colorHex);
-          this.pay();
+      this.gameObj.rotation();
+      this.gameObj.tween.on('complete', () => {
+        this.onSetTextButton(this.state.valueWheel.value, this.state.valueWheel.colorHex);
+        this.pay();
+        if (!this.state.autoStart) {
           this.state.valueChip = [];
-          this.deleteValue();
-          this.dice.setWinImgDice();
-        });
-      }
+          this.chipZone.deleteValue();
+        }
+        if (this.gameMode === 'roulette') {
+          this.autoStart.startAutoSpinInterval();
+        } else if (this.gameMode === 'dice') {
+          this.gameObj.setWinImgDice();
+        }
+      });
     }
   }
 
-  setValueWheel() {
-    if (this.gameMode === 'roulette') {
-      this.state.valueWheel = this.analytics.getValue(this.sectors);
-    } else if (this.gameMode === 'dice') {
-      this.state.valueWheel = this.analytics.getValue(this.sectorsDice);
-    }
+  setValueWheel(sectors) {
+    this.state.valueWheel = this.analytics.getValue(sectors);
   }
 
   pay() {
-    this.analytics.valueWheelCheck(this.state.valueWheel, this.state.valueChip);
+    this.valueGameObjCheck(this.state.valueWheel, this.state.valueChip);
   }
 
-  onSetTextButton(text, color) {
+  valueGameObjCheck(winValue, allBets) {
+    let valueWh = winValue.value;
+    let colorWh = winValue.color;
+    let possibleCombs = [];
+
     if (this.gameMode === 'roulette') {
-      if (text || text === 0) {
-        this.wheel.buttonOnWheelText.setText(text);
-      } else {
-        this.wheel.buttonOnWheelText.setText(this.defaultTextButton);
-      }
-      if (color) {
-        this.wheel.buttonOnWheel.fillColor = color;
-      } else {
-        this.wheel.buttonOnWheel.fillColor = this.defaultColorButton;
-      }
+      payTable.forEach(objectPt => {
+        let valuePt = objectPt.value;
+
+        if (valueWh === valuePt) {
+          possibleCombs.push(objectPt);
+
+          payTable.forEach(obj => {
+            if (colorWh === obj.color && typeof obj.value === 'string') {
+              possibleCombs.push(obj);
+            }
+          });
+        }
+      });
     } else if (this.gameMode === 'dice') {
-      if (text) {
-        this.dice.buttonOnDiceText.setText(text);
-      } else {
-        this.dice.buttonOnDiceText.setText(this.defaultTextButtonDice);
+      payTableDice.forEach(objectPt => {
+        let valuePt = objectPt.value;
+
+        if (valueWh === valuePt) {
+          possibleCombs.push(objectPt);
+        }
+      });
+    }
+
+    allBets.forEach(objectVc => {
+      let valueCh = objectVc?.value;
+      let colorCh = objectVc?.color;
+      let bet = objectVc?.currentBet;
+
+      possibleCombs.forEach(objectPc => {
+        let valuePc = objectPc.value;
+        let valuePcCoef = objectPc.coef;
+        let winValue = bet * valuePcCoef;
+
+        if (valueCh === valuePc) {
+          this.stats.setBalanceValue((this.stats.balance += winValue));
+          this.stats.setCurrentWinValue((this.stats.currentWin = winValue));
+          this.notifications.successNotification(objectVc, valuePcCoef);
+        }
+      });
+
+      if ((valueCh !== valueWh && colorCh !== colorWh) || (valueCh !== valueWh && colorCh === colorWh && typeof valueCh !== 'string')) {
+        if (!this.state.autoStart) {
+          this.stats.setTotalBetValue(0);
+        }
+        this.stats.setCurrentWinValue(0);
+        this.notifications.errorNotification(objectVc);
+      }
+    });
+
+    if (this.state.autoStart) {
+      if (this.stats.balance === 0 && this.stats.balance < this.stats.currentBet) {
+        this.notifications.alertNotification('Top up your balance to continue playing!');
+        this.state.autoStart = false;
+        this.state.valueChip = [];
+        this.state.timer = 10;
+        this.autostart.spinViaText.setText(`SPIN VIA ${this.state.timer} secs`);
+        this.stats.setBalanceValue(0);
+        this.stats.setCurrentBetValue(0);
+        this.stats.setTotalBetValue(0);
       }
     }
+  }
+
+  calculateTotalBet() {
+    const currBet = this.state.valueChip.map(object => object.currentBet);
+    const totalBet = currBet.reduce((acc, number) => acc + number, 0);
+    this.stats.totalBet = totalBet;
+  }
+
+  onSetChip(chip) {
+    let allBets = this.state.valueChip;
+
+    if (!this.checkBet(chip)) {
+      return;
+    }
+
+    if (this.gameObj.isPlay) {
+      return;
+    }
+
+    let value = chip.number;
+    let currentBet = this.stats.currentBet;
+    let totalBet = this.stats.totalBet;
+    let balance = this.stats.balance;
+    const existingBet = allBets.find(obj => obj.value === value);
+
+    if (existingBet) {
+      existingBet.currentBet += this.stats.currentBet;
+    } else {
+      allBets.push({
+        value: value,
+        color: this.colors.currentColor(value),
+        currentBet: this.stats.currentBet,
+      });
+    }
+
+    if (totalBet + currentBet > balance) {
+      this.notifications.alertNotification('Not enough funds to bet!');
+      return;
+    }
+    this.state.valueWheel = null;
+    this.stats.setTotalBetValue((totalBet += currentBet));
+    this.calculateTotalBet();
+    this.onSetTextButton();
+
+    if (this.gameMode === 'dice') {
+      this.gameObj.createDiceDefault();
+    }
+
+    return true;
+  }
+
+  createButtonResetAll() {
+    const resetAllRectangle = this.add.rectangle(0, 0, 180, 80, 0xffffff);
+    const resetAllText = this.add.text(0, 0, 'Reset all', textStyle.resetButtonText).setOrigin(0.5);
+
+    this.containerButtonResetAll = this.add
+      .container(this.x / 2 + 400, 965, [resetAllRectangle, resetAllText])
+      .setSize(180, 80)
+      .setInteractive()
+      .on(
+        'pointerdown',
+        () => {
+          this.setDefaultValue();
+        },
+        this
+      );
   }
 
   setDefaultValue() {
-    if (this.gameMode === 'roulette') {
-      if (!this.wheel.isSpinning) {
+    if (!this.gameObj.isPlay) {
+      if (this.gameMode === 'roulette') {
         this.state.timer = 10;
         this.autoStart.spinViaText.setText(`SPIN VIA ${this.state.timer} secs`);
-        this.state.valueChip = [];
-        this.state.valueWheel = null;
-        this.stats.setTotalBetValue(0);
-        this.stats.setCurrentBetValue(10);
-        this.stats.setCurrentWinValue(0);
-        this.deleteValue();
-        this.onSetTextButton();
-      }
-    } else if (this.gameMode === 'dice') {
-      if (!this.dice.isRoll) {
-        this.dice.createDiceDefault();
-        this.state.valueChip = [];
-        this.state.valueWheel = null;
-        this.stats.setTotalBetValue(0);
-        this.stats.setCurrentBetValue(10);
-        this.stats.setCurrentWinValue(0);
-        this.deleteValue();
-        this.onSetTextButton();
+      } else if (this.gameMode === 'dice') {
+        this.gameObj.createDiceDefault();
       }
     }
+
+    this.state.valueChip = [];
+    this.state.valueWheel = null;
+    this.stats.setTotalBetValue(0);
+    this.stats.setCurrentBetValue(10);
+    this.stats.setCurrentWinValue(0);
+    this.chipZone.deleteValue();
+    this.onSetTextButton();
   }
 
-  deleteValue() {
-    this.chipZone.chipArray.forEach(obj => {
-      if (obj.value) {
-        obj.value = 0;
-        obj.valueText.setText('');
-      }
-    });
+  onSetTextButton(text, color) {
+    switch (this.gameMode) {
+      case 'roulette':
+        text || text === 0 ? this.gameObj.buttonOnWheelText.setText(text) : this.gameObj.buttonOnWheelText.setText(this.defaultTextButton);
+        color ? (this.gameObj.buttonOnWheel.fillColor = color) : (this.gameObj.buttonOnWheel.fillColor = this.defaultColorButton);
+        break;
+
+      case 'dice':
+        text ? this.gameObj.buttonOnDiceText.setText(text) : this.gameObj.buttonOnDiceText.setText(this.defaultTextButtonDice);
+        break;
+
+      default:
+        break;
+    }
   }
 }

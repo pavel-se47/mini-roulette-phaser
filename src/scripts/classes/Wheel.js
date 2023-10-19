@@ -7,7 +7,7 @@ export default class Wheel {
     this.sectors = sectors;
     this.colorSector = colors;
     this.numbers = numbers;
-    this.isSpinning = false;
+    this.isPlay = false;
     this.spinDuration = 3000;
     this.containerWheel = null;
     this.create();
@@ -48,9 +48,7 @@ export default class Wheel {
 
   createButtonOnWheel() {
     this.buttonOnWheel = this.scene.add.circle(0, 0, 50, this.scene.defaultColorButton).setStrokeStyle(8, 0xffffff);
-
     this.buttonOnWheelText = this.scene.add.text(0, 0, this.scene.defaultTextButton, textStyle.buttonOnWheelText).setOrigin(0.5);
-
     this.containerButtonOnWheel = this.scene.add
       .container(this.scene.x / 2, 250, [this.buttonOnWheel, this.buttonOnWheelText])
       .setSize(85, 85)
@@ -58,8 +56,8 @@ export default class Wheel {
       .on(
         'pointerdown',
         () => {
-          if (!this.isSpinning) {
-            this.scene.spin();
+          if (!this.isPlay) {
+            this.scene.spin(this.sectors);
           }
         },
         this.scene
@@ -68,8 +66,7 @@ export default class Wheel {
 
   createArrowForWheel() {
     const triangle = new Phaser.Geom.Triangle(this.scene.x / 2, 70, this.scene.x / 2 - 30, 20, this.scene.x / 2 + 30, 20);
-
-    const graphicsForTriangle = this.scene.add
+    this.graphicsForTriangle = this.scene.add
       .graphics({
         fillStyle: { color: 0xffa500 },
       })
@@ -80,15 +77,15 @@ export default class Wheel {
 
   rotation() {
     let targetAngle = this.currentAngleRotate(this.scene.state.valueWheel.value);
-    if (!this.isSpinning) {
-      this.isSpinning = true;
-      this.tweens = this.scene.tweens.add({
+    if (!this.isPlay) {
+      this.isPlay = true;
+      this.tween = this.scene.tweens.add({
         targets: this.containerWheel,
         angle: targetAngle,
         duration: this.spinDuration,
         ease: 'Cubic.easeOut',
         onComplete: () => {
-          this.isSpinning = false;
+          this.isPlay = false;
         },
       });
     }
@@ -103,5 +100,13 @@ export default class Wheel {
         return 360 + startAngle - currAngle * i;
       }
     }
+  }
+
+  destroyClass() {
+    this.colors = null;
+    this.containerWheel?.destroy();
+    this.containerButtonOnWheel?.destroy();
+    this.graphicsForTriangle?.destroy();
+    this.tween?.destroy();
   }
 }

@@ -1,20 +1,31 @@
 import Chip from './Chip';
-import Colors from './Colors';
 import textStyle from '../../textStyle.json';
 
 export default class ChipZone {
-  constructor(scene) {
+  constructor(scene, sectors, numbers, colors) {
     this.scene = scene;
+    this.sectors = sectors;
+    this.numbers = numbers;
+    this.colorsChip = colors;
     this.containerButtonClearChipZone = null;
-    this.colors = new Colors(this);
     this.foundMatch = false;
     this.chipArray = [];
     this.create();
   }
 
   create() {
+    this.scene.gameMode === 'roulette' ? this.createCopyArr(this.numbers, this.colorsChip) : null;
     this.createChipZone();
-    this.createButtonClearChipZone();
+  }
+
+  createCopyArr(numbers, colors) {
+    this.valueNumbersWheelCopy = JSON.parse(JSON.stringify(numbers));
+    this.valueColorsWheelCopy = JSON.parse(JSON.stringify(colors));
+
+    this.valueNumbersWheelCopy.push('AR');
+    this.valueColorsWheelCopy.push(16711680);
+    this.valueNumbersWheelCopy.push('AB');
+    this.valueColorsWheelCopy.push(0);
   }
 
   createChipZone() {
@@ -22,23 +33,23 @@ export default class ChipZone {
     this.group = this.scene.add.container(this.scene.x / 2 - 250, this.scene.y / 2 + 100, [chipZoneText]);
 
     if (this.scene.gameMode === 'roulette') {
-      this.createChip(2, 7, 0, this.scene.sectors, this.scene.valueColorsWheelCopy, this.scene.valueNumbersWheelCopy);
+      this.createChip(2, 7, 0, this.sectors, this.valueNumbersWheelCopy, this.valueColorsWheelCopy);
     } else if (this.scene.gameMode === 'dice') {
-      this.createChip(0, 3, 170, this.scene.sectorsDice, this.scene.valueColorsDice, this.scene.valueNumbersDice);
+      this.createChip(0, 3, 170, this.sectors, this.numbers, this.colorsChip);
     }
   }
 
-  createChip(a, b, c, sector, color, number) {
+  createChip(zoneColorBet, chipInLine, offsetX, sector, number, color) {
     let countX = 0;
     let countY = 0;
 
-    for (let i = 0; i < sector + a; i += 1) {
+    for (let i = 0; i < sector + zoneColorBet; i += 1) {
       const w = 70;
       const h = 70;
       let x;
       let y;
 
-      if (countX >= b) {
+      if (countX >= chipInLine) {
         countX = 0;
         countY += 1;
       }
@@ -46,12 +57,12 @@ export default class ChipZone {
       x = countX * 80;
       y = countY * 80;
 
-      let chip = new Chip(this.scene, x + c, y, w, h, color[i], number[i]);
+      let chip = new Chip(this.scene, x + offsetX, y, w, h, typeof color === 'object' ? color[i] : color, number[i]);
       this.group.add(chip);
       this.chipArray.push(chip);
 
       chip.setCallback(() => {
-        if (this.onSetChip(chip)) {
+        if (this.scene.onSetChip(chip)) {
           chip.value += this.scene.stats.currentBet;
           chip.valueText.setText(chip.value);
         }
@@ -61,75 +72,19 @@ export default class ChipZone {
     }
   }
 
-  onSetChip(chip) {
-    let allBets = this.scene.state.valueChip;
-
-    if (!this.scene.checkBet(chip)) {
-      return;
-    }
-
-    if (this.scene.gameMode === 'roulette') {
-      if (this.scene.wheel.isSpinning) {
-        return;
+  deleteValue() {
+    this.chipArray.forEach(obj => {
+      if (obj.value) {
+        obj.value = 0;
+        obj.valueText.setText('');
       }
-    } else if (this.scene.gameMode === 'dice') {
-      if (this.scene.dice.isRoll) {
-        return;
-      }
-    }
-
-    let value = chip.number;
-    let currentBet = this.scene.stats.currentBet;
-    let totalBet = this.scene.stats.totalBet;
-    let balance = this.scene.stats.balance;
-    const existingBet = allBets.find(obj => obj.value === value);
-
-    if (existingBet) {
-      existingBet.currentBet += this.scene.stats.currentBet;
-    } else {
-      allBets.push({
-        value: value,
-        color: this.colors.currentColor(value),
-        currentBet: this.scene.stats.currentBet,
-      });
-    }
-
-    if (totalBet + currentBet > balance) {
-      this.scene.notifications.alertNotification('Not enough funds to bet!');
-      return;
-    }
-    this.scene.state.valueWheel = null;
-    this.scene.stats.setTotalBetValue((totalBet += currentBet));
-    this.scene.betZone.calculateTotalBet();
-    this.scene.onSetTextButton();
-
-    console.log(this.scene.dice.diceWin);
-
-    if (this.scene.gameMode === 'dice') {
-      this.scene.dice.createDiceDefault();
-    }
-
-    return true;
+    });
   }
 
-  createButtonClearChipZone() {
-    const clearChipZoneRectangle = this.scene.add.rectangle(0, 0, 180, 80, 0xffffff);
-    const clearChipZoneText = this.scene.add.text(0, 0, 'Reset all', textStyle.resetButtonText).setOrigin(0.5);
-
-    this.containerButtonClearChipZone = this.scene.add
-      .container(this.scene.x / 2 + 400, 965, [clearChipZoneRectangle, clearChipZoneText])
-      .setSize(180, 80)
-      .setInteractive()
-      .on(
-        'pointerdown',
-        () => {
-          this.scene.setDefaultValue();
-        },
-        this.scene
-      );
-  }
-
-  destroyChip() {
+  destroyClass() {
+    this.group?.destroy();
+    this.containerButtonClearChipZone?.destroy();
+    this.colors = null;
     this.chipArray.length = 0;
   }
 }

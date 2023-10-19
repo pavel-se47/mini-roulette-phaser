@@ -2,8 +2,14 @@ import Chip from './Chip';
 import textStyle from '../../textStyle.json';
 
 export default class Dinamics {
-  constructor(scene) {
+  constructor(scene, gameMode, objClass, sectors, numbers, colors, colorsStart) {
     this.scene = scene;
+    this.gameMode = gameMode;
+    this.objClass = objClass;
+    this.sectors = sectors;
+    this.numbers = numbers;
+    this.colors = colors;
+    this.colorsStart = colorsStart;
     this.sectorCountValue = [5, 12, 19, 26, 33, 37];
     this.sectorCountValueColor = '0xffa500';
     this.create();
@@ -18,9 +24,9 @@ export default class Dinamics {
     const dinamicsRectangleMain = this.scene.add.rectangle(0, 0, 300, 80, 0xffffff);
     const dinamicsTextMain = this.scene.add.text(-60, -10, 'Select sectors', textStyle.sectorDinamicsText);
     const dinamicsRectangleCurr = this.scene.add.rectangle(0, 450, 300, 80, 0xffffff);
-    const dinamicsTextCurr = this.scene.add.text(-100, 430, 'Current sector count \n' + this.scene.sectors, textStyle.sectorDinamicsText);
+    const dinamicsTextCurr = this.scene.add.text(-100, 430, 'Current sector count \n' + this.sectors, textStyle.sectorDinamicsText);
 
-    const dinamicsSectorGroup = this.scene.add.container(this.scene.x / 2 - 700, this.scene.y / 2 - 30, [
+    this.dinamicsSectorGroup = this.scene.add.container(this.scene.x / 2 - 700, this.scene.y / 2 - 30, [
       dinamicsRectangleMain,
       dinamicsTextMain,
       dinamicsRectangleCurr,
@@ -46,13 +52,12 @@ export default class Dinamics {
 
       let chipSector = new Chip(this.scene, x - 80, y + 100, w, h, this.sectorCountValueColor, this.sectorCountValue[i]);
 
-      dinamicsSectorGroup.add(chipSector);
+      this.dinamicsSectorGroup.add(chipSector);
 
       chipSector.setCallback(() => {
-        this.scene.sectors = chipSector.number;
-        this.scene.valueNumbersWheel = [];
-        this.scene.valueColorsWheel = [];
-        this.scene.scene.restart();
+        this.scene.destroyGame();
+        this.scene.startGame(this.gameMode, this.objClass, chipSector.number, this.numbers, this.colors, this.colorsStart);
+        return;
       });
 
       countX += 1;
@@ -60,28 +65,32 @@ export default class Dinamics {
   }
 
   createInput() {
-    const input = this.scene.add.dom(260, 780, 'input', 'font-size: 22px; width: 160px; text-align: center;');
-    const button = this.scene.add.text(260, 850, 'Enter number', textStyle.buttonSector).setOrigin(0.5).setInteractive();
+    this.input = this.scene.add.dom(260, 780, 'input', 'font-size: 22px; width: 160px; text-align: center;');
 
-    button
+    this.button = this.scene.add.text(260, 850, 'Enter number', textStyle.buttonSector).setOrigin(0.5).setInteractive();
+    this.button
       .on('pointerover', () => {
-        button.setBackgroundColor('#ffa500');
+        this.button.setBackgroundColor('#ffa500');
       })
       .on('pointerout', () => {
-        button.setBackgroundColor('white');
+        this.button.setBackgroundColor('white');
       })
       .on('pointerdown', () => {
         const inputValue = document.querySelector('input').value;
         const value = parseInt(inputValue);
 
         if (!isNaN(value) && value >= 3 && value <= 37) {
-          this.scene.sectors = value;
-          this.scene.valueNumbersWheel = [];
-          this.scene.valueColorsWheel = [];
-          this.scene.scene.restart();
+          this.scene.destroyGame();
+          this.scene.startGame(this.gameMode, this.objClass, value, this.numbers, this.colors, this.colorsStart);
         } else {
           this.scene.notifications.alertNotification('The number of sectors can be set from 3 to 37');
         }
       });
+  }
+
+  destroyClass() {
+    this.dinamicsSectorGroup?.destroy();
+    this.input?.destroy();
+    this.button?.destroy();
   }
 }
