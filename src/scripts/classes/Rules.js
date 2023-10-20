@@ -27,7 +27,7 @@ export default class Rules extends Phaser.GameObjects.Container {
   }
 
   createRulesAndLimits() {
-    this.rules = this.scene.add.container(1500, 310);
+    this.rules = this.scene.add.container(1498, 310);
 
     const statsRectangle = this.scene.add.rectangle(0, 0, 650, 270, 0xffffff);
     const rulesText = this.scene.add.text(

@@ -57,7 +57,7 @@ export default class Wheel {
         'pointerdown',
         () => {
           if (!this.isPlay) {
-            this.scene.spin(this.sectors);
+            this.scene.spin();
           }
         },
         this.scene

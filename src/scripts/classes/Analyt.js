@@ -2,45 +2,41 @@ import payTable from '../../payTable.json';
 import payTableDice from '../../payTableDice.json';
 
 export default class Analyt {
-  constructor(scene) {
+  constructor(scene, gameMode, sectors) {
     this.scene = scene;
+    this.sectors = sectors;
+    this.payTableList = {
+      roulette: payTable,
+      dice: payTableDice,
+    };
+    this.startIndexList = { roulette: 2, dice: 0 };
+    this.currentPayTable = this.payTableList[gameMode];
+    this.currentStartIndex = this.startIndexList[gameMode];
   }
 
-  getValue(endValue) {
-    if (this.scene.gameMode === 'roulette') {
-      return Phaser.Utils.Array.GetRandom(payTable, 2, endValue);
-    } else if (this.scene.gameMode === 'dice') {
-      return Phaser.Utils.Array.GetRandom(payTableDice, 0, endValue);
-    }
+  getValue() {
+    return Phaser.Utils.Array.GetRandom(this.currentPayTable, this.currentStartIndex, this.sectors);
   }
 
   deal(allBets, valueWh, colorWh) {
     let possibleCombs = [];
     let winCombs = [];
 
-    if (this.scene.gameMode === 'roulette') {
-      payTable.forEach(objectPt => {
-        let valuePt = objectPt.value;
+    this.currentPayTable.forEach(objectPt => {
+      let valuePt = objectPt.value;
 
-        if (valueWh === valuePt) {
-          possibleCombs.push({ ...objectPt, coef: objectPt.coef });
+      if (valueWh === valuePt) {
+        possibleCombs.push({ ...objectPt, coef: objectPt.coef });
 
-          payTable.forEach(obj => {
+        if (colorWh) {
+          this.currentPayTable.forEach(obj => {
             if (colorWh === obj.color && typeof obj.value === 'string') {
               possibleCombs.push({ ...obj, coef: obj.coef });
             }
           });
         }
-      });
-    } else if (this.scene.gameMode === 'dice') {
-      payTableDice.forEach(objectPt => {
-        let valuePt = objectPt.value;
-
-        if (valueWh === valuePt) {
-          possibleCombs.push(objectPt);
-        }
-      });
-    }
+      }
+    });
 
     allBets.forEach(objectVc => {
       let valueCh = objectVc.value;

@@ -7,7 +7,11 @@ export default class Stats {
   #totalBet;
   constructor(scene) {
     this.scene = scene;
-    this.#balance = 1000;
+    if (this.scene.gameMode === 'roulette') {
+      this.#balance = 1000;
+    } else if (this.scene.gameMode === 'dice') {
+      this.#balance = 500;
+    }
     this.#currentBet = 10;
     this.#currentWin = 0;
     this.#totalBet = 0;

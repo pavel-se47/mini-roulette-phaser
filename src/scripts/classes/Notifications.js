@@ -5,20 +5,40 @@ import '@pnotify/core/dist/BrightTheme.css';
 export default class Notifications {
   constructor() {}
 
-  successNotification(object) {
+  // successNotification(object) {
+  //   success({
+  //     title: `Congratulations! You bet ${object.value} win!`,
+  //     text: `You win ${object.currentBet * object.coef} credits!`,
+  //     delay: 1000,
+  //     hide: true,
+  //     width: '400px',
+  //   });
+  // }
+
+  // errorNotification(object) {
+  //   error({
+  //     title: `Sorry, you bet ${object.value} lost :(`,
+  //     text: `You lost ${object.currentBet} credits!`,
+  //     delay: 1000,
+  //     hide: true,
+  //     width: '400px',
+  //   });
+  // }
+
+  successNotification(bets, credits) {
     success({
-      title: `Congratulations! You bet ${object.value} win!`,
-      text: `You win ${object.currentBet * object.coef} credits!`,
+      title: `Congratulations! You bet ${bets} win!`,
+      text: `You win ${credits} credits!`,
       delay: 1000,
       hide: true,
       width: '400px',
     });
   }
 
-  errorNotification(object) {
+  errorNotification(bets, credits) {
     error({
-      title: `Sorry, you bet ${object.value} lost :(`,
-      text: `You lost ${object.currentBet} credits!`,
+      title: `Sorry, you bet ${bets} lost :(`,
+      text: `You lost ${credits} credits!`,
       delay: 1000,
       hide: true,
       width: '400px',

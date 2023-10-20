@@ -96,7 +96,7 @@ export default class GameScene extends Phaser.Scene {
     if (this.gameMode === 'roulette') {
       this.valueNumbersWheel = [];
       this.valueColorsWheel = [];
-      this.autoStart = new AutoStart(this, sectors);
+      this.autoStart = new AutoStart(this);
       this.rulesContainer = this.add.container();
       this.rulesContainer.add((this.rules = new Rules(this, 1200, 400)));
       this.dinamics = new Dinamics(this, gameMode, objClass, this.sectors, this.valueNumbersWheel, this.valueColorsWheel, colorsStart);
@@ -106,7 +106,7 @@ export default class GameScene extends Phaser.Scene {
     this.notifications = new Notifications();
     this.colors = new Colors(this);
     this.betZone = new BetZone(this, this.valueNumberBet, this.valueColorsBet);
-    this.analytics = new Analyt(this);
+    this.analytics = new Analyt(this, gameMode, sectors);
     this.gameObj = new objClass(this, sectors, numbers, colors);
     this.stats = new Stats(this);
   }
@@ -249,10 +249,10 @@ export default class GameScene extends Phaser.Scene {
     return true;
   }
 
-  spin(sectors) {
+  spin() {
     if (this.checkBeforeSpin()) {
       this.stats.setBalanceValue((this.stats.balance -= this.stats.totalBet));
-      this.setValueWheel(sectors);
+      this.setValueWheel();
       this.onSetTextButton();
       this.gameObj.rotation();
       this.gameObj.tween.on('complete', () => {
@@ -271,8 +271,8 @@ export default class GameScene extends Phaser.Scene {
     }
   }
 
-  setValueWheel(sectors) {
-    this.state.valueWheel = this.analytics.getValue(sectors);
+  setValueWheel() {
+    this.state.valueWheel = this.analytics.getValue();
   }
 
   pay() {
@@ -285,25 +285,64 @@ export default class GameScene extends Phaser.Scene {
 
     let win = this.analytics.deal(allBets, valueWh, colorWh);
 
+    // одно уведомление о выигрыше и одно о проигрыше
+
+    let allWinBet = [];
+    let allWinCredits = 0;
+    let allLoseBet = [];
+    let allLoseCredits = 0;
+
     if (win) {
       win.forEach(objW => {
-        let bet = objW.currentBet;
-        let winValue = bet * objW.coef;
-        this.stats.setBalanceValue((this.stats.balance += winValue));
-        this.stats.setCurrentWinValue((this.stats.currentWin = winValue));
-        this.notifications.successNotification(objW);
+        allWinBet.push(objW.value);
+        let currWin = objW.currentBet * objW.coef;
+        allWinCredits += currWin;
 
         allBets.forEach(objB => {
           if (objW.value !== objB.value) {
-            this.forLose(this.state.autoStart, objB);
+            this.checkForLose(objB, allLoseBet, allLoseCredits);
           }
         });
       });
     } else {
       allBets.forEach(objB => {
-        this.forLose(this.state.autoStart, objB);
+        this.checkForLose(objB, allLoseBet, allLoseCredits);
       });
     }
+
+    if (allWinCredits) {
+      this.stats.setBalanceValue((this.stats.balance += allWinCredits));
+      this.stats.setCurrentWinValue((this.stats.currentWin = allWinCredits));
+      this.notifications.successNotification(allWinBet, allWinCredits);
+      if (allLoseBet.length) {
+        this.notifications.errorNotification(allLoseBet, allLoseCredits);
+      }
+    } else {
+      this.forLose(this.state.autoStart, allLoseBet, allLoseCredits);
+    }
+
+    // уведомление на каждую выигрышную и проигрышную ставки
+    // в Notifications внести корректировки
+
+    // if (win) {
+    //   win.forEach(objW => {
+    //     let bet = objW.currentBet;
+    //     let winValue = bet * objW.coef;
+    //     this.stats.setBalanceValue((this.stats.balance += winValue));
+    //     this.stats.setCurrentWinValue((this.stats.currentWin = winValue));
+    //     this.notifications.successNotification(objW);
+
+    //     allBets.forEach(objB => {
+    //       if (objW.value !== objB.value) {
+    //         this.forLose(this.state.autoStart, objB);
+    //       }
+    //     });
+    //   });
+    // } else {
+    //   allBets.forEach(objB => {
+    //     this.forLose(this.state.autoStart, objB);
+    //   });
+    // }
 
     if (this.state.autoStart) {
       if (this.stats.balance === 0 && this.stats.balance < this.stats.currentBet) {
@@ -319,12 +358,19 @@ export default class GameScene extends Phaser.Scene {
     }
   }
 
-  forLose(autoStart, obj) {
+  checkForLose(obj, allLoseBet, allLoseCredits) {
+    allLoseBet.push(obj.value);
+    let currLose = 0;
+    currLose += obj.currentBet;
+    allLoseCredits += currLose;
+  }
+
+  forLose(autoStart, allLoseBet, allLoseCredits) {
     if (!autoStart) {
       this.stats.setTotalBetValue(0);
     }
     this.stats.setCurrentWinValue(0);
-    this.notifications.errorNotification(obj);
+    this.notifications.errorNotification(allLoseBet, allLoseCredits);
   }
 
   calculateTotalBet() {

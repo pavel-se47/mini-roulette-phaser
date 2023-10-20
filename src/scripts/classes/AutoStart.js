@@ -1,9 +1,8 @@
 import textStyle from '../../textStyle.json';
 
 export default class AutoStart {
-  constructor(scene, sectors) {
+  constructor(scene) {
     this.scene = scene;
-    this.sectors = sectors;
     this.interval = null;
     this.autoStartTime = 10;
     this.containerStartAutoStart = null;
@@ -23,7 +22,7 @@ export default class AutoStart {
           this.spinViaText.setText(`SPIN VIA ${this.scene.state.timer} secs`);
 
           if (this.scene.state.timer === 0) {
-            this.scene.spin(this.sectors);
+            this.scene.spin();
             this.stopAutoSpinInterval();
             this.interval = null;
           }
