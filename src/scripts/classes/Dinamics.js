@@ -22,7 +22,7 @@ export default class Dinamics {
 
   createSectorDinamics() {
     const dinamicsRectangleMain = this.scene.add.rectangle(0, 0, 300, 80, 0xffffff);
-    const dinamicsTextMain = this.scene.add.text(-60, -10, 'Select sectors', textStyle.sectorDinamicsText);
+    const dinamicsTextMain = this.scene.add.text(-110, -10, 'Select sectors for wheel', textStyle.sectorDinamicsText);
     const dinamicsRectangleCurr = this.scene.add.rectangle(0, 450, 300, 80, 0xffffff);
     const dinamicsTextCurr = this.scene.add.text(-100, 430, 'Current sector count \n' + this.sectors, textStyle.sectorDinamicsText);
 
@@ -56,6 +56,7 @@ export default class Dinamics {
 
       chipSector.setCallback(() => {
         this.scene.destroyGame();
+        this.scene.sectors = chipSector.number;
         this.scene.startGame(this.gameMode, this.objClass, chipSector.number, this.numbers, this.colors, this.colorsStart);
         return;
       });
@@ -81,6 +82,7 @@ export default class Dinamics {
 
         if (!isNaN(value) && value >= 3 && value <= 37) {
           this.scene.destroyGame();
+          this.scene.sectors = value;
           this.scene.startGame(this.gameMode, this.objClass, value, this.numbers, this.colors, this.colorsStart);
         } else {
           this.scene.notifications.alertNotification('The number of sectors can be set from 3 to 37');

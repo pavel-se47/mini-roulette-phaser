@@ -322,7 +322,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
     // уведомление на каждую выигрышную и проигрышную ставки
-    // в Notifications внести корректировки
+    // в Notifications и forLose внести корректировки
 
     // if (win) {
     //   win.forEach(objW => {
