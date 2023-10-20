@@ -55,7 +55,7 @@ export default class GameScene extends Phaser.Scene {
   }
 
   createBackground() {
-    this.background = this.add.sprite(this.sys.game.config.width / 2, this.sys.game.config.height / 2, 'bg1');
+    this.add.sprite(this.sys.game.config.width / 2, this.sys.game.config.height / 2, 'bg1');
   }
 
   createButtonCreateDice() {
@@ -289,8 +289,8 @@ export default class GameScene extends Phaser.Scene {
 
     let allWinBet = [];
     let allWinCredits = 0;
-    let allLoseBet = [];
-    let allLoseCredits = 0;
+    this.allLoseBet = [];
+    this.allLoseCredits = 0;
 
     if (win) {
       win.forEach(objW => {
@@ -300,13 +300,13 @@ export default class GameScene extends Phaser.Scene {
 
         allBets.forEach(objB => {
           if (objW.value !== objB.value) {
-            this.checkForLose(objB, allLoseBet, allLoseCredits);
+            this.checkForLose(objB);
           }
         });
       });
     } else {
       allBets.forEach(objB => {
-        this.checkForLose(objB, allLoseBet, allLoseCredits);
+        this.checkForLose(objB);
       });
     }
 
@@ -314,11 +314,11 @@ export default class GameScene extends Phaser.Scene {
       this.stats.setBalanceValue((this.stats.balance += allWinCredits));
       this.stats.setCurrentWinValue((this.stats.currentWin = allWinCredits));
       this.notifications.successNotification(allWinBet, allWinCredits);
-      if (allLoseBet.length) {
-        this.notifications.errorNotification(allLoseBet, allLoseCredits);
+      if (this.allLoseBet.length) {
+        this.notifications.errorNotification(this.allLoseBet, this.allLoseCredits);
       }
     } else {
-      this.forLose(this.state.autoStart, allLoseBet, allLoseCredits);
+      this.forLose(this.state.autoStart, this.allLoseBet, this.allLoseCredits);
     }
 
     // уведомление на каждую выигрышную и проигрышную ставки
@@ -358,11 +358,9 @@ export default class GameScene extends Phaser.Scene {
     }
   }
 
-  checkForLose(obj, allLoseBet, allLoseCredits) {
-    allLoseBet.push(obj.value);
-    let currLose = 0;
-    currLose += obj.currentBet;
-    allLoseCredits += currLose;
+  checkForLose(object) {
+    this.allLoseBet.push(object.value);
+    this.allLoseCredits += object.currentBet;
   }
 
   forLose(autoStart, allLoseBet, allLoseCredits) {
