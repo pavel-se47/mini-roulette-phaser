@@ -136,6 +136,11 @@
     "font": "bold 24px Arial",
     "fill": "black",
     "align": "center"
+},
+
+"buttonOnDiceText":{
+    "font": "bold 30px Arial",
+    "fill": "white"
 }
 
 } 

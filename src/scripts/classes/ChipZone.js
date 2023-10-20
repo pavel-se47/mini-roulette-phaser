@@ -72,7 +72,7 @@ export default class ChipZone {
     }
   }
 
-  deleteValue() {
+  deleteValueOnChip() {
     this.chipArray.forEach(obj => {
       if (obj.value) {
         obj.value = 0;

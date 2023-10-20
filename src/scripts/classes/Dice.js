@@ -48,7 +48,7 @@ export default class Dice {
 
   createButtonOnDice() {
     this.buttonOnDice = this.scene.add.circle(0, 0, 50, this.scene.defaultColorButtonDice).setStrokeStyle(8, 0xffffff);
-    this.buttonOnDiceText = this.scene.add.text(0, 0, this.scene.defaultTextButtonDice, textStyle.buttonOnWheelText).setOrigin(0.5);
+    this.buttonOnDiceText = this.scene.add.text(0, 0, this.scene.defaultTextButtonDice, textStyle.buttonOnDiceText).setOrigin(0.5);
     this.containerButtonOnDice = this.scene.add
       .container(this.scene.x / 2, 850, [this.buttonOnDice, this.buttonOnDiceText])
       .setSize(85, 85)

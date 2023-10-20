@@ -5,10 +5,10 @@ import '@pnotify/core/dist/BrightTheme.css';
 export default class Notifications {
   constructor() {}
 
-  successNotification(object, coef) {
+  successNotification(object) {
     success({
       title: `Congratulations! You bet ${object.value} win!`,
-      text: `You win ${object.currentBet * coef} credits!`,
+      text: `You win ${object.currentBet * object.coef} credits!`,
       delay: 1000,
       hide: true,
       width: '400px',

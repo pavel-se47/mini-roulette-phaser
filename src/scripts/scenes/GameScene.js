@@ -11,8 +11,6 @@ import Analyt from '../classes/Analyt';
 import Dinamics from '../classes/Dinamics';
 import Button from '../classes/Button';
 import limits from '../../limits.json';
-import payTable from '../../payTable.json';
-import payTableDice from '../../payTableDice.json';
 import textStyle from '../../textStyle.json';
 
 export default class GameScene extends Phaser.Scene {
@@ -262,7 +260,7 @@ export default class GameScene extends Phaser.Scene {
         this.pay();
         if (!this.state.autoStart) {
           this.state.valueChip = [];
-          this.chipZone.deleteValue();
+          this.chipZone.deleteValueOnChip();
         }
         if (this.gameMode === 'roulette') {
           this.autoStart.startAutoSpinInterval();
@@ -284,57 +282,28 @@ export default class GameScene extends Phaser.Scene {
   valueGameObjCheck(winValue, allBets) {
     let valueWh = winValue.value;
     let colorWh = winValue.color;
-    let possibleCombs = [];
 
-    if (this.gameMode === 'roulette') {
-      payTable.forEach(objectPt => {
-        let valuePt = objectPt.value;
+    let win = this.analytics.deal(allBets, valueWh, colorWh);
 
-        if (valueWh === valuePt) {
-          possibleCombs.push(objectPt);
+    if (win) {
+      win.forEach(objW => {
+        let bet = objW.currentBet;
+        let winValue = bet * objW.coef;
+        this.stats.setBalanceValue((this.stats.balance += winValue));
+        this.stats.setCurrentWinValue((this.stats.currentWin = winValue));
+        this.notifications.successNotification(objW);
 
-          payTable.forEach(obj => {
-            if (colorWh === obj.color && typeof obj.value === 'string') {
-              possibleCombs.push(obj);
-            }
-          });
-        }
+        allBets.forEach(objB => {
+          if (objW.value !== objB.value) {
+            this.forLose(this.state.autoStart, objB);
+          }
+        });
       });
-    } else if (this.gameMode === 'dice') {
-      payTableDice.forEach(objectPt => {
-        let valuePt = objectPt.value;
-
-        if (valueWh === valuePt) {
-          possibleCombs.push(objectPt);
-        }
+    } else {
+      allBets.forEach(objB => {
+        this.forLose(this.state.autoStart, objB);
       });
     }
-
-    allBets.forEach(objectVc => {
-      let valueCh = objectVc?.value;
-      let colorCh = objectVc?.color;
-      let bet = objectVc?.currentBet;
-
-      possibleCombs.forEach(objectPc => {
-        let valuePc = objectPc.value;
-        let valuePcCoef = objectPc.coef;
-        let winValue = bet * valuePcCoef;
-
-        if (valueCh === valuePc) {
-          this.stats.setBalanceValue((this.stats.balance += winValue));
-          this.stats.setCurrentWinValue((this.stats.currentWin = winValue));
-          this.notifications.successNotification(objectVc, valuePcCoef);
-        }
-      });
-
-      if ((valueCh !== valueWh && colorCh !== colorWh) || (valueCh !== valueWh && colorCh === colorWh && typeof valueCh !== 'string')) {
-        if (!this.state.autoStart) {
-          this.stats.setTotalBetValue(0);
-        }
-        this.stats.setCurrentWinValue(0);
-        this.notifications.errorNotification(objectVc);
-      }
-    });
 
     if (this.state.autoStart) {
       if (this.stats.balance === 0 && this.stats.balance < this.stats.currentBet) {
@@ -348,6 +317,14 @@ export default class GameScene extends Phaser.Scene {
         this.stats.setTotalBetValue(0);
       }
     }
+  }
+
+  forLose(autoStart, obj) {
+    if (!autoStart) {
+      this.stats.setTotalBetValue(0);
+    }
+    this.stats.setCurrentWinValue(0);
+    this.notifications.errorNotification(obj);
   }
 
   calculateTotalBet() {
@@ -431,7 +408,7 @@ export default class GameScene extends Phaser.Scene {
     this.stats.setTotalBetValue(0);
     this.stats.setCurrentBetValue(10);
     this.stats.setCurrentWinValue(0);
-    this.chipZone.deleteValue();
+    this.chipZone.deleteValueOnChip();
     this.onSetTextButton();
   }
 
